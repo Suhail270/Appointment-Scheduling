@@ -1,0 +1,18 @@
+{% load crispy_forms_tags %}
+
+{% block crispy_forms_field %}
+{% spaceless %}
+    <div class="form-group{% if field.errors %} has-error{% endif %}">
+        {% if field.label %}
+            <label for="{{ field.id_for_label }}" class="control-label{% if field.field.required %} requiredField{% endif %}">
+                {% include 'crispy_forms/field_label.html' %}
+            </label>
+        {% endif %}
+
+        <div class="controls">
+            {% include 'crispy_forms/field.html' %}
+            {% include 'crispy_forms/help_text_and_errors.html' %}
+        </div>
+    </div>
+{% endspaceless %}
+{% endblock crispy_forms_field %}
