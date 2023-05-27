@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    # "sales.apps.SalesConfig"
     # Third party apps
     'crispy_forms',
     "crispy_tailwind",
@@ -96,12 +96,12 @@ WSGI_APPLICATION = "aptBooking.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "appointment",
-        'USER': "aptuser",
-        'PASSWORD': "aptuser123",
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': "appointment",
+    #     'USER': "aptuser",
+    #     'PASSWORD': "aptuser123",
+    # }
 }
 
 # Password validation
