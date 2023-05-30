@@ -91,12 +91,10 @@ class Appointment(models.Model):
     time = models.ForeignKey("TimeChoices", null=True, blank=True, on_delete=models.SET_NULL)
     preferred_contact_method = models.ForeignKey("PreferredContact", null=True, blank=True, on_delete=models.SET_NULL)
     status = models.ForeignKey("Status", null=True, blank=True, default=get_default_status, on_delete=models.SET_NULL)
-
+    
     def __str__(self):
         return "Agent " + str(self.agent.user) + " - " + str(self.customer.user)
-    
-    
-
-    
-
-
+      
+      
+      
+      
