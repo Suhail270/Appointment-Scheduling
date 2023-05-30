@@ -8,7 +8,7 @@ from sales.models import Appointment
 from sales.serializers import appointmentSerializer
 from django.http.response import JsonResponse
 
-def  register(request):
+def register(request):
     if request.method == "POST":
         form = NewUserForm(request.POST)
         if form.is_valid():
@@ -20,9 +20,12 @@ def  register(request):
     form = NewUserForm()
     return render (request=request, template_name="signup.html", context={"register_form":form})
 
+def appointments(request):
+    return render (request = request, template_name = "appointments.html")
+
 @csrf_exempt
 def appointment_api(request):
     if request.method == 'GET':
-        appointments = Appointment.objects.all().filter(agent_id = request.GET['id'])
+        appointments = Appointment.objects.all().filter(agent_id = request.user.id)
         serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(serialized.data, safe = False)
