@@ -31,7 +31,10 @@ class PreferredContact(models.Model):
         return f"{self.choice}"
     
 class TimeChoices(models.Model):
-    choice = models.CharField(max_length=10)
+
+    # Format for time slots: 10:00 AM - 10:30 AM, 19 characters.
+    
+    choice = models.CharField(max_length=19)
 
     objects = BookingManager()
 
@@ -62,6 +65,7 @@ class Agent(models.Model):
 
 class Customer(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
+    organization = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.user.email
@@ -73,13 +77,24 @@ class Customer(models.Model):
         user.delete()
         user_profile.delete()
 
+def get_default_status():
+    return Status.objects.get_or_create(choice="Pending")[0]
+
 class Appointment(models.Model):
+
     customer = models.ForeignKey("Customer", null=True, blank=True, on_delete=models.SET_NULL)
     agent = models.ForeignKey("Agent", null=True, blank=True, on_delete=models.SET_NULL)
     day = models.DateField()
+
+    # Format for time slots: 10:00 AM - 10:30 AM, 19 characters.
+
     time = models.ForeignKey("TimeChoices", null=True, blank=True, on_delete=models.SET_NULL)
     preferred_contact_method = models.ForeignKey("PreferredContact", null=True, blank=True, on_delete=models.SET_NULL)
-    status = models.ForeignKey("Status", null=True, blank=True, on_delete=models.SET_NULL)
-
+    status = models.ForeignKey("Status", null=True, blank=True, default=get_default_status, on_delete=models.SET_NULL)
+    
     def __str__(self):
         return "Agent " + str(self.agent.user) + " - " + str(self.customer.user)
+      
+      
+      
+      
