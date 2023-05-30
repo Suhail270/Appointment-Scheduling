@@ -61,7 +61,7 @@ class Agent(models.Model):
         user_profile.delete()
 
 class Customer(models.Model):
-    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
+    organization = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.user.email
@@ -81,5 +81,6 @@ class Appointment(models.Model):
     preferred_contact_method = models.ForeignKey("PreferredContact", null=True, blank=True, on_delete=models.SET_NULL)
     status = models.ForeignKey("Status", null=True, blank=True, on_delete=models.SET_NULL)
 
-    def __str__(self):
-        return "Agent " + str(self.agent.user) + " - " + str(self.customer.user)
+    
+
+
