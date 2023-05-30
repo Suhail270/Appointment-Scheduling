@@ -4,7 +4,7 @@ from .forms import NewUserForm
 from django.contrib.auth import login
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from sales.models import Appointment
+from sales.models import Appointment, Agent
 from sales.serializers import appointmentSerializer
 from django.http.response import JsonResponse
 
@@ -26,6 +26,8 @@ def appointments(request):
 @csrf_exempt
 def appointment_api(request):
     if request.method == 'GET':
-        appointments = Appointment.objects.all().filter(agent_id = request.user.id)
+        a_id = int(Agent.objects.all().filter(user_id = request.user.id)[0].id)
+        print(a_id)
+        appointments = Appointment.objects.all().filter(agent_id = a_id)
         serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(serialized.data, safe = False)
