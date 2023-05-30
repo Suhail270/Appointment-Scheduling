@@ -95,8 +95,11 @@ class Appointment(models.Model):
     def __str__(self):
         return "Agent " + str(self.agent.user) + " - " + str(self.customer.user)
     
-    
+class AgentCancelledAppointment(models.Model):
+    appointment = models.ForeignKey("Appointment", null=True, blank=True, on_delete=models.SET_NULL)
+    reason = models.CharField(max_length=100, null=False, blank=False)
 
-    
+    def __str__(self):
+        return "Agent " + str(self.appointment.agent) + " - " + str(self.appointment.customer)
 
 
