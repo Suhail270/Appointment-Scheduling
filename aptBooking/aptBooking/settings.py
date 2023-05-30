@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'theme',
 
     # Local apps
-    'sales'
+    'sales',
+    'users'
 ]
 
 MIDDLEWARE = [

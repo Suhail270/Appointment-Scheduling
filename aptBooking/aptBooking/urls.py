@@ -26,4 +26,10 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('', LoginView.as_view(template_name='dashboard.html'), name='home'),
     #path('login/', LoginView.as_view(), name='login')
+
+    #any routes that start with users should be directed to
+    # path("users/", include('users.urls'))
+    path("hello/add/", user_views.add, name='add'),
+    path("hello/", user_views.say_hello, name='hello'),
+
 ]
