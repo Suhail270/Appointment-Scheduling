@@ -2,6 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import NewUserForm
 from django.contrib.auth import login
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from sales.models import Appointment
+from sales.serializers import appointmentSerializer
+from django.http.response import JsonResponse
 
 def  register(request):
     if request.method == "POST":
@@ -14,3 +19,10 @@ def  register(request):
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = NewUserForm()
     return render (request=request, template_name="signup.html", context={"register_form":form})
+
+@csrf_exempt
+def appointment_api(request):
+    if request.method == 'GET':
+        appointments = Appointment.objects.all().filter(agent_id = request.GET['id'])
+        serialized = appointmentSerializer(appointments, many = True)
+        return JsonResponse(serialized.data, safe = False)
