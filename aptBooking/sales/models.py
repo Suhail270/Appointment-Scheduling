@@ -61,6 +61,7 @@ class Agent(models.Model):
         user_profile.delete()
 
 class Customer(models.Model):
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
     organization = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
