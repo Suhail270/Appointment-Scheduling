@@ -6,7 +6,8 @@ from .models import (User,
                      Customer,
                      Appointment,
                      Status,
-                     TimeChoices)
+                     TimeChoices,
+                     AgentCancelledAppointment)
 
 admin.site.register(User)
 admin.site.register(UserProfile)
@@ -16,3 +17,4 @@ admin.site.register(Agent)
 admin.site.register(Customer)
 admin.site.register(Appointment)
 admin.site.register(Status)
+admin.site.register(AgentCancelledAppointment)
