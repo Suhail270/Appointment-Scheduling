@@ -22,9 +22,10 @@ from django.contrib.auth.views import LoginView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('register/',user_views.register, name='register'),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('', LoginView.as_view(template_name='dashboard.html'), name='home'),
+    # path('register/',user_views.register, name='register'),
+    path('users/', include('django.contrib.auth.urls')),
+    path('users/',include('users.urls')),
+    path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),
     #path('login/', LoginView.as_view(), name='login')
 
     #any routes that start with users should be directed to
