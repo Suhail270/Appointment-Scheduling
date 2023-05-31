@@ -8,7 +8,7 @@ from sales.models import Appointment, Agent
 from sales.serializers import appointmentSerializer
 from django.http.response import JsonResponse
 
-def  register(request):
+def register(request):
     if request.method == "POST":
         form = NewUserForm(request.POST)
         if form.is_valid():
