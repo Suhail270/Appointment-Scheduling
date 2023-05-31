@@ -26,8 +26,10 @@ def appointments(request):
 @csrf_exempt
 def appointment_api(request):
     if request.method == 'GET':
-        a_id = int(Agent.objects.all().filter(user_id = request.user.id)[0].id)
-        print(a_id)
+        a_id_list = Agent.objects.all().filter(user_id = request.user.id)
+        if len(a_id_list) == 0:
+            return JsonResponse(None, safe = False)
+        a_id = int(a_id_list[0].id)
         appointments = Appointment.objects.all().filter(agent_id = a_id)
         serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(serialized.data, safe = False)
