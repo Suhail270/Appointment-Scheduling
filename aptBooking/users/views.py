@@ -14,3 +14,17 @@ def  register(request):
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = NewUserForm()
     return render (request=request, template_name="signup.html", context={"register_form":form})
+
+
+#-----
+#request handler
+def say_hello(request):
+    return render(request,'users/hello.html', {'name' : 'Sally'})
+
+def add(request):
+    num1 = int (request.POST['num1'])
+    num2 = int (request.POST['num2'])
+    res = num1 + num2
+    return render(request,'users/result.html', {'result': res})
+
+#-----
