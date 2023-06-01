@@ -43,6 +43,13 @@ class appointmentsListView(SingleTableView):
         qs = qs.all().filter(agent_id = a_id)
         return qs
 
+def update_appointment_status(request):
+    if request.method == 'POST':
+        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        appointment.status = Status.objects.all().filter(choice = request.POST.get('app_stat'))[0]
+        appointment.save()
+    return render(request=request, template_name="update_appointment.html")
+
 @csrf_exempt
 def appointment_api(request):
     if request.method == 'GET':
@@ -59,6 +66,7 @@ def appointment_api(request):
         json = simplejson.dumps(
             [
                 {
+                    'id': str(appointment.id),
                     'customer': str(appointment.customer.user.username),
                     'email': str(appointment.customer.user.email),
                     'mobile': str(appointment.customer.user.mobile),
