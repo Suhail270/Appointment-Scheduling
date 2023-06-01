@@ -46,9 +46,10 @@ class appointmentsListView(SingleTableView):
 def update_appointment_status(request):
     if request.method == 'POST':
         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
-        appointment.status = Status.objects.all().filter(choice = request.POST.get('app_stat'))[0]
+        appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
         appointment.save()
-    return render(request=request, template_name="update_appointment.html")
+    stat_choices = [stat for stat in Status.objects.all()]
+    return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
 
 @csrf_exempt
 def appointment_api(request):

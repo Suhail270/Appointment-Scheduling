@@ -9,10 +9,16 @@
     {{ form.as_p }} 
     <label for="app_stat">Choose a new status</label>
 
+
+
     <select name="app_stat" id="app_stat">
-        <option value="Pending">Pending</option>
+      {% for choice in choices %}
+        <li>{{ link }}</li>
+        <option value={{ choice.id }}>{{ choice.choice }}</option>
+      {% endfor %}
+        {% comment %} <option value="Pending">Pending</option>
         <option value="Completed">Completed</option>
-        <option value="Cancelled">Cancelled</option>
+        <option value="Cancelled">Cancelled</option> {% endcomment %}
     </select>
 
     <label for="app_id">Choose an appointment</label>
