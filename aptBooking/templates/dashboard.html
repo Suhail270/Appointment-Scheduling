@@ -5,11 +5,29 @@
 {% block content %}
     {%comment%} Checks if use is logged in  {%endcomment%}
     {% if user.is_authenticated %}
-      Hi {{ user.username }}!
-      Your Email is {{ user.email }}
-      <p><a href="{% url 'logout' %}">logout</a></p>
+    
+      <h1>
+        Hi {{ user.username }}, {{ user.email }}
+      </h1>
+      <h2>Your appoitments for today are as follows:</h2>      
+      
     {% else %}
       <p>You are not logged in</p>
       <a href="{% url 'login' %}">login</a>
     {% endif %}
+    <script>
+      fetch('http://127.0.0.1:8000/appointment')
+        .then(res => {
+          return res.json();
+        })
+        .then(data =>{
+          data.forEach(appoitment=> {
+            console.log(data)
+            const markup = `<li>${appoitment.customer_id}</li>
+                            <li>${appoitment.day}</li>`
+            document.querySelector('h2').insertAdjacentHTML('beforeend',markup)
+          });
+        })
+        .catch(error => console.log(error));
+    </script>
 {% endblock %}

@@ -8,26 +8,28 @@
 <!-- <link rel="stylesheet" href="{% static 'css/login.css' %}"> -->
   <style>
     body {
-      background: rgb(245, 245, 245);
+      background: rgb(235, 232, 232);
     }
     
     .content {
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
       background: white;
       align-items: center;
-      padding: 150px;
+      padding: 200px;
       text-align: center;
       justify-content:center;
     }
     </style>
 <div class="content">
   <h2>Login</h2>
-  <form method="post" class="mt-5">
+  <form method="post" class="">
     {% csrf_token %}
-    <fieldset class="form-group">
-      {{ form|crispy }} 
-    </fieldset>
+    <b>
+      <fieldset class="rounded-circle">
+        {{ form|crispy }} 
+      </fieldset>
+    </b>
     <button type="submit" class="btn btn-success">Login</button>
   </form>
   <div class="py-5 border-t border-gray-200 mt-5">
