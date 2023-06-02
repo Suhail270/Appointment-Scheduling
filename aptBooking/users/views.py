@@ -56,10 +56,21 @@ def update_appointment_status(request):
     return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
 
 @csrf_exempt
-def dashboard(request):
+def dashboard_dropdown(request):
     if request.method == 'POST':
         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
         appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
+        appointment.save()
+    if True:
+        stat_choices = [stat for stat in Status.objects.all()]
+        return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
+
+@csrf_exempt
+def dashboard(request):
+    if request.method == 'POST':
+        print(request.POST)
+        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
         appointment.save()
     if True:
         stat_choices = [stat for stat in Status.objects.all()]

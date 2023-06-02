@@ -26,9 +26,8 @@
       <div class="tbl-container bdr">
         <form method="post" id="hiddenForm">
           <input type="number" name="app_id" id="app_id" hidden>
-          <input type="number" name="app_stat" id="app_stat" hidden>
+          <input type="text" name="app_stat" id="app_stat" hidden>
         </form>
-        <form method="post" id="statForm">
         <table class="table table-striped  ">
           <thead class="thead-dark">
             <tr>
@@ -39,12 +38,12 @@
                 <th scope="col">Time</th>
                 <th scope="col">Preferred Contact</th>
                 <th scope="col">Status</th>
+                <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
           </tbody>
         </table>
-      </form>
       </div>
     </div>
     {% else %}
@@ -52,10 +51,10 @@
       <a href="{% url 'login' %}">login</a>
     {% endif %}
     <script>
-      function SubmitForm(formId, appId) {
+      function buttonSubmit(formId, appId, opt) {
         var oForm = document.getElementById(formId);
-        document.getElementById("app_stat").value = document.getElementById("app_stat" + appId).value
-        document.getElementById("app_id").value = appId
+        document.getElementById("app_stat").value = opt;
+        document.getElementById("app_id").value = appId;
         oForm.submit(); 
       }
       fetch('http://127.0.0.1:8000/appointment')
@@ -72,13 +71,10 @@
                             <td>${appointment.mobile}</td>
                             <td>${appointment.time}</td>
                             <td>${appointment.preferred_contact_method}</td>
+                            <td>${appointment.status}</td>
                             <td>
-                              <select onchange="SubmitForm('hiddenForm', ${appointment.id})" name="app_stat${appointment.id}" id="app_stat${appointment.id}">
-                                <option value="${appointment.status}" selected hidden disabled>${appointment.status}</option>
-                                {% for choice in choices %}
-                                  <option value={{ choice.id }}>{{ choice.choice }}</option>
-                                {% endfor %}
-                              </select>
+                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-primary">Appointment Complete</button>
+                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Cancelled')" type="button" class="btn btn-danger bt1" style="height:40px;width:185px" >Cancel Appointment </button>
                             </td>
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
