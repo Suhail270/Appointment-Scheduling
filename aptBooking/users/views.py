@@ -10,8 +10,8 @@ from django.http.response import JsonResponse
 from .tables import AppointmentTable
 from django_tables2 import SingleTableView
 from django.views.generic import ListView
-# from django_filters.views import FilterView
-# from django_filters import FilterSet
+from django_filters.views import FilterView
+from django_filters import FilterSet
 import simplejson
 
 def register(request):
@@ -49,7 +49,7 @@ def update_appointment_status(request):
         appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
         appointment.save()
     stat_choices = [stat for stat in Status.objects.all()]
-    return render(request=request, context={'choice': stat_choices}, template_name="update_appointment.html")
+    return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
 
 @csrf_exempt
 def appointment_api(request):
