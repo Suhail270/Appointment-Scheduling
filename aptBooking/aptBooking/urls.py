@@ -28,5 +28,6 @@ urlpatterns = [
     path('users/',include('users.urls')),
     path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),
     path('login/', LoginView.as_view(), name='login'),
-    path('appointment/', views.appointment_api)
+    #path('appointment/', views.appointments)
+    path('appointment/', views.appointment_api, name = "appointments")
 ]

@@ -4,7 +4,7 @@
 
 {% block content %}
   <h2>Here:</h2>
-  <form action="/appointment" method="post">
+  <form method="post">
     {% csrf_token %}
     {{ form.as_p }} 
     

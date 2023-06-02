@@ -55,13 +55,19 @@ def update_appointment_status(request):
 def delete_appointment_status(request):
     if request.method == 'POST':
         appointment_id = Appointment.objects.get(pk = int(request.POST.get('app_id')))
-        reason_for_cancellation = request.POST.get('reason_for_cancel').value()
-        appointment_id.status = "Cancelled"
+        reason_for_cancellation = request.POST.get('reason_for_cancel')
+        status_id = Status.objects.filter(choice="Cancelled")
+        print(status_id)
+        appointment_id.status = Status.objects.get(pk = 3)
         appointment_id.save()
 
         new_record = AgentCancelledAppointment(appointment= appointment_id, reason= reason_for_cancellation)
         new_record.save()
     return render(request=request, template_name="delete_appointment.html")
+
+
+def appointments(request):
+    return render (request = request, template_name = "appointments.html")
 
 
 @csrf_exempt
