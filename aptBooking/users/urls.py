@@ -6,7 +6,7 @@ from . import views
 urlpatterns = [
     path('register/', views.register, name='register'),
     #path('appointments/', views.update_appointment_status, name = "appointments"),
-    path('appointments/', appointmentsListView.as_view()),
-    path('agents/', views.agent_api, name = "agents")
+    path('update_appointment/', views.update_appointment_status, name='update_appointment_status'),
+    # path('agents/', views.agent_api, name = "agents")
 ]
 

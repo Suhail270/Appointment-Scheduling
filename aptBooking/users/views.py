@@ -5,7 +5,7 @@ from django.contrib.auth import login
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from sales.models import Appointment, Agent, User, Customer, Status, TimeChoices, PreferredContact
-from sales.serializers import appointmentSerializer, agentSerializer
+from sales.serializers import appointmentSerializer
 from django.http.response import JsonResponse
 from .tables import AppointmentTable
 from django_tables2 import SingleTableView
@@ -13,7 +13,6 @@ from django.views.generic import ListView
 # from django_filters.views import FilterView
 # from django_filters import FilterSet
 import simplejson
-
 
 def register(request):
     if request.method == "POST":
@@ -26,9 +25,6 @@ def register(request):
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = NewUserForm()
     return render (request=request, template_name="signup.html", context={"register_form":form})
-
-# def appointments_api(request):
-#     return render (request = request, template_name = "appointments.html")
 
 # class AppointmentFilter(FilterSet):
 #     Class Meta:
@@ -47,23 +43,16 @@ class appointmentsListView(SingleTableView):
         qs = qs.all().filter(agent_id = a_id)
         return qs
 
-def agent_api(request):
-    return render (request = request, template_name = "agents.html")
-
-
-
 def update_appointment_status(request):
     if request.method == 'POST':
         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
         appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
         appointment.save()
     stat_choices = [stat for stat in Status.objects.all()]
-    return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
-
-
+    return render(request=request, context={'choice': stat_choices}, template_name="update_appointment.html")
 
 @csrf_exempt
-def appointments_api(request):
+def appointment_api(request):
     if request.method == 'GET':
         agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
         if len(agents) == 0:
@@ -91,13 +80,3 @@ def appointments_api(request):
         )
         # serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(simplejson.loads(json), safe = False)
-    
-
-def agent_info(request):
-    a_id_list = Agent.objects.all().filter(user_id = request.user.id)
-    if len(a_id_list) == 0:
-        return JsonResponse(None, safe = False)
-    #a_id = int(a_id_list[0].id)
-    serialized = agentSerializer(a_id_list, many = True)
-    return JsonResponse(serialized.data, safe = False)
-    
