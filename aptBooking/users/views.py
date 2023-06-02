@@ -10,8 +10,8 @@ from django.http.response import JsonResponse
 from .tables import AppointmentTable
 from django_tables2 import SingleTableView
 from django.views.generic import ListView
-from django_filters.views import FilterView
-from django_filters import FilterSet
+#from django_filters.views import FilterView
+#from django_filters import FilterSet
 import simplejson
 
 def register(request):
