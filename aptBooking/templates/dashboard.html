@@ -5,11 +5,69 @@
 {% block content %}
     {%comment%} Checks if use is logged in  {%endcomment%}
     {% if user.is_authenticated %}
-      Hi {{ user.username }}!
-      Your Email is {{ user.email }}
-      <p><a href="{% url 'logout' %}">logout</a></p>
+      <style>
+       .tbl-container {
+        width: 1000px;
+        margin-top: 10px;
+        margin-left: 10px;
+      }
+      .bdr {
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .bt1 {
+        margin-top: 10px;
+      }
+      </style>
+      <h1>
+        Hi {{ user.username }} Welcome To your Appoitments Dashboard
+      </h1> 
+      <div class="container my-5">
+      <div class="tbl-container bdr">
+        <table class="table table-striped  ">
+          <thead class="thead-dark">
+            <tr>
+                <th scope="col">Customer</th>
+                <th scope="col">Appoitment Day</th>
+                <th scope="col">Email</th>
+                <th scope="col">Mobile</th>
+                <th scope="col">Time</th>
+                <th scope="col">Preferred Contact</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
     {% else %}
       <p>You are not logged in</p>
       <a href="{% url 'login' %}">login</a>
     {% endif %}
+    <script>
+      fetch('http://127.0.0.1:8000/appointment')
+        .then(res => {
+          return res.json();
+        })
+        .then(data =>{
+          data.forEach(appoitment=> {
+            console.log(data)
+            const markup = `<tr>
+                            
+                            <td>${appoitment.customer}</td>
+                            <td>${appoitment.day}</td>
+                            <td>${appoitment.email}</td>
+                            <td>${appoitment.mobile}</td>
+                            <td>${appoitment.time}</td>
+                            <td>${appoitment.preferred_contact_method}</td>
+                            <td>${appoitment.status}</td>
+                            <td><button type="submit" class="btn btn-primary">Appoitment Complete</button> <button  type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >Cancel Appoitment </button></td>
+                            </tr>`
+            document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
+          });
+        })
+        .catch(error => console.log(error));
+    </script>
 {% endblock %}
