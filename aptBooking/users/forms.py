@@ -11,3 +11,4 @@ class NewUserForm(UserCreationForm):
 		model = User
 		fields = ('username','email','mobile')
 		field_classes = {"username":UsernameField} 
+

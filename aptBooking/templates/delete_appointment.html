@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Appointment{% endblock %}
+
+{% block content %}
+  <h2>Here:</h2>
+  <form action="/appointment" method="post">
+    {% csrf_token %}
+    {{ form.as_p }} 
+    
+    <label for="app_id">Enter the appointment id:</label>
+
+    <input type="number" name="app_id" id="app_id">
+    <br>
+    
+    <p>Please state the reason for cancellation:</p>
+    <input type="text" name="reason_for_cancel" id="reason_for_cancel">
+
+    <button type="submit">Submit</button>
+    <a href="dashboard.html"><button> Cancel </button></a>
+  </form>
+{% endblock %}

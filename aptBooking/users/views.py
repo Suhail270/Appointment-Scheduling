@@ -4,7 +4,7 @@ from .forms import NewUserForm
 from django.contrib.auth import login
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from sales.models import Appointment, Agent, User, Customer, Status, TimeChoices, PreferredContact
+from sales.models import Appointment, Agent, User, Customer, Status, TimeChoices, PreferredContact,AgentCancelledAppointment
 from sales.serializers import appointmentSerializer
 from django.http.response import JsonResponse
 from .tables import AppointmentTable
@@ -50,6 +50,19 @@ def update_appointment_status(request):
         appointment.save()
     stat_choices = [stat for stat in Status.objects.all()]
     return render(request=request, context={'choice': stat_choices}, template_name="update_appointment.html")
+
+#fetching appointment based on APPOINTMENT ID
+def delete_appointment_status(request):
+    if request.method == 'POST':
+        appointment_id = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        reason_for_cancellation = request.POST.get('reason_for_cancel').value()
+        appointment_id.status = "Cancelled"
+        appointment_id.save()
+
+        new_record = AgentCancelledAppointment(appointment= appointment_id, reason= reason_for_cancellation)
+        new_record.save()
+    return render(request=request, template_name="delete_appointment.html")
+
 
 @csrf_exempt
 def appointment_api(request):
