@@ -1,12 +1,39 @@
 {% extends 'base.html' %}
-
+{% load static %}
+{% load crispy_forms_tags %}
+{% load tailwind_filters %}
 {% block title %}Login{% endblock %}
 
 {% block content %}
+<!-- <link rel="stylesheet" href="{% static 'css/login.css' %}"> -->
+  <style>
+    body {
+      background: rgb(235, 232, 232);
+    }
+    
+    .content {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      align-items: center;
+      padding: 200px;
+      text-align: center;
+      justify-content:center;
+    }
+    </style>
+<div class="content">
   <h2>Login</h2>
-  <form method="post">
+  <form method="post" class="">
     {% csrf_token %}
-    {{ form.as_p }} 
-    <button type="submit">Login</button>
+    <b>
+      <fieldset class="rounded-circle">
+        {{ form|crispy }} 
+      </fieldset>
+    </b>
+    <button type="submit" class="btn btn-success">Login</button>
   </form>
+  <div class="py-5 border-t border-gray-200 mt-5">
+    <a class="hover:text-blue-500" href="http://localhost:8000/users/password_reset/" alt="Alyousuf">Forgot password?</a>
+  </div>
+</div>
 {% endblock %}
