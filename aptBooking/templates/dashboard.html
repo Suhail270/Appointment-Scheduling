@@ -20,26 +20,31 @@
       }
       </style>
       <h1>
-        Hi {{ user.username }} Welcome To your Appoitments Dashboard
+        Hi {{ user.username }} Welcome To your Appointments Dashboard
       </h1> 
       <div class="container my-5">
       <div class="tbl-container bdr">
+        <form method="post" id="hiddenForm">
+          <input type="number" name="app_id" id="app_id" hidden>
+          <input type="number" name="app_stat" id="app_stat" hidden>
+        </form>
+        <form method="post" id="statForm">
         <table class="table table-striped  ">
           <thead class="thead-dark">
             <tr>
                 <th scope="col">Customer</th>
-                <th scope="col">Appoitment Day</th>
+                <th scope="col">appointment Day</th>
                 <th scope="col">Email</th>
                 <th scope="col">Mobile</th>
                 <th scope="col">Time</th>
                 <th scope="col">Preferred Contact</th>
                 <th scope="col">Status</th>
-                <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
           </tbody>
         </table>
+      </form>
       </div>
     </div>
     {% else %}
@@ -47,23 +52,34 @@
       <a href="{% url 'login' %}">login</a>
     {% endif %}
     <script>
+      function SubmitForm(formId, appId) {
+        var oForm = document.getElementById(formId);
+        document.getElementById("app_stat").value = document.getElementById("app_stat" + appId).value
+        document.getElementById("app_id").value = appId
+        oForm.submit(); 
+      }
       fetch('http://127.0.0.1:8000/appointment')
         .then(res => {
           return res.json();
         })
         .then(data =>{
-          data.forEach(appoitment=> {
+          data.forEach(appointment=> {
             console.log(data)
             const markup = `<tr>
-                            
-                            <td>${appoitment.customer}</td>
-                            <td>${appoitment.day}</td>
-                            <td>${appoitment.email}</td>
-                            <td>${appoitment.mobile}</td>
-                            <td>${appoitment.time}</td>
-                            <td>${appoitment.preferred_contact_method}</td>
-                            <td>${appoitment.status}</td>
-                            <td><button type="submit" class="btn btn-primary">Appoitment Complete</button> <button  type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >Cancel Appoitment </button></td>
+                            <td>${appointment.customer}</td>
+                            <td>${appointment.day}</td>
+                            <td>${appointment.email}</td>
+                            <td>${appointment.mobile}</td>
+                            <td>${appointment.time}</td>
+                            <td>${appointment.preferred_contact_method}</td>
+                            <td>
+                              <select onchange="SubmitForm('hiddenForm', ${appointment.id})" name="app_stat${appointment.id}" id="app_stat${appointment.id}">
+                                <option value="${appointment.status}" selected hidden disabled>${appointment.status}</option>
+                                {% for choice in choices %}
+                                  <option value={{ choice.id }}>{{ choice.choice }}</option>
+                                {% endfor %}
+                              </select>
+                            </td>
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });
