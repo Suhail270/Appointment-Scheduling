@@ -15,6 +15,9 @@
         border-radius: 6px;
         overflow: hidden;
       }
+      .bt1 {
+        margin-top: 10px;
+      }
       </style>
       <h1>
         Hi {{ user.username }} Welcome To your Appoitments Dashboard
@@ -60,7 +63,7 @@
                             <td>${appoitment.time}</td>
                             <td>${appoitment.preferred_contact_method}</td>
                             <td>${appoitment.status}</td>
-                            <td><button type="submit" class="btn btn-primary">Appoitment Complete</button> <button type="submit" class="btn btn-danger">Cancel Appoitment</button></td>
+                            <td><button type="submit" class="btn btn-primary">Appoitment Complete</button> <button  type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >Cancel Appoitment </button></td>
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });
