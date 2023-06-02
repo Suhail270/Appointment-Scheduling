@@ -23,11 +23,12 @@ from users import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # path('register/',user_views.register, name='register'),
+    #path('register/',user_views.register, name='register'),
     path('users/', include('django.contrib.auth.urls')),
     path('users/',include('users.urls')),
     path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),
     path('login/', LoginView.as_view(), name='login'),
-    path('appointment', views.appointment_api),
-    path('agentUpdate', views.agent_info)
+    path('appointments', views.appointments_api),
+    #path('appointments', views.update_appointment_status),
+    path('agents', views.agent_info)
 ]
