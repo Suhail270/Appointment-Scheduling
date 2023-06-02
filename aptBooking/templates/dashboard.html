@@ -5,17 +5,32 @@
 {% block content %}
     {%comment%} Checks if use is logged in  {%endcomment%}
     {% if user.is_authenticated %}
-    
+      <style>
+       .tbl-container {
+        width: 1000px;
+        margin-top: 10px;
+        margin-left: 10px;
+      }
+      .bdr {
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      </style>
       <h1>
-        Hi {{ user.username }}, {{ user.email }}
+        Hi {{ user.username }} Welcome To your Appoitments Dashboard
       </h1> 
       <div class="container my-5">
-      <div class="shadow-lg p-3 mb-5 bg-white rounded">
-        <table class="table table-striped ">
+      <div class="tbl-container bdr">
+        <table class="table table-striped  ">
           <thead class="thead-dark">
             <tr>
-                <th scope="col">Customer Id</th>
+                <th scope="col">Customer</th>
                 <th scope="col">Appoitment Day</th>
+                <th scope="col">Email</th>
+                <th scope="col">Mobile</th>
+                <th scope="col">Time</th>
+                <th scope="col">Preferred Contact</th>
+                <th scope="col">Status</th>
                 <th scope="col">Actions</th>
             </tr>
           </thead>
@@ -23,7 +38,7 @@
           </tbody>
         </table>
       </div>
-    </div>     
+    </div>
     {% else %}
       <p>You are not logged in</p>
       <a href="{% url 'login' %}">login</a>
@@ -37,8 +52,14 @@
           data.forEach(appoitment=> {
             console.log(data)
             const markup = `<tr>
-                            <td>${appoitment.customer_id}</td>
+                            
+                            <td>${appoitment.customer}</td>
                             <td>${appoitment.day}</td>
+                            <td>${appoitment.email}</td>
+                            <td>${appoitment.mobile}</td>
+                            <td>${appoitment.time}</td>
+                            <td>${appoitment.preferred_contact_method}</td>
+                            <td>${appoitment.status}</td>
                             <td><button type="submit" class="btn btn-primary">Appoitment Complete</button> <button type="submit" class="btn btn-danger">Cancel Appoitment</button></td>
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
