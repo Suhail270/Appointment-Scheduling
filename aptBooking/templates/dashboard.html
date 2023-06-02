@@ -8,9 +8,22 @@
     
       <h1>
         Hi {{ user.username }}, {{ user.email }}
-      </h1>
-      <h2>Your appoitments for today are as follows:</h2>      
-      
+      </h1> 
+      <div class="container my-5">
+      <div class="shadow-lg p-3 mb-5 bg-white rounded">
+        <table class="table table-striped ">
+          <thead class="thead-dark">
+            <tr>
+                <th scope="col">Customer Id</th>
+                <th scope="col">Appoitment Day</th>
+                <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>     
     {% else %}
       <p>You are not logged in</p>
       <a href="{% url 'login' %}">login</a>
@@ -23,9 +36,12 @@
         .then(data =>{
           data.forEach(appoitment=> {
             console.log(data)
-            const markup = `<li>${appoitment.customer_id}</li>
-                            <li>${appoitment.day}</li>`
-            document.querySelector('h2').insertAdjacentHTML('beforeend',markup)
+            const markup = `<tr>
+                            <td>${appoitment.customer_id}</td>
+                            <td>${appoitment.day}</td>
+                            <td><button type="submit" class="btn btn-primary">Appoitment Complete</button> <button type="submit" class="btn btn-danger">Cancel Appoitment</button></td>
+                            </tr>`
+            document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });
         })
         .catch(error => console.log(error));
