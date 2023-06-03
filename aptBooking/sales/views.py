@@ -147,11 +147,12 @@ def get_available_time_slots(request):
         selected_agent = Agent.objects.get(id=request.GET.get("agent"))
 
         existing_appointments = Appointment.objects.filter(day=selected_day, agent=selected_agent)
-        unavailable_slots = [appointment.time.choice for appointment in existing_appointments]
+        for appointment in existing_appointments:
+            if appointment.status.choice != "Cancelled":  # Exclude cancelled appointments
+                unavailable_slots.append(appointment.time.choice)
 
         all_time_slots = TimeChoices.objects.exclude(choice__in=unavailable_slots)
         available_time_slots = [{"id": time_slot.id, "choice": time_slot.choice} for time_slot in all_time_slots]
 
-        print("AVAILABLE: ", available_time_slots)
-
         return JsonResponse({"time_slots": available_time_slots})
+

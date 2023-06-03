@@ -100,7 +100,8 @@ $(document).ready(function() {
   }
 
   // Function to check if both fields have changed
-  function checkFieldsChanged() {
+function checkFieldsChanged() {
+  try {
     var newDay = dayField.val();
     var newAgent = agentField.val();
 
@@ -112,7 +113,10 @@ $(document).ready(function() {
 
     // Update the available time slots
     updateAvailableTimeSlots();
+  } catch (error) {
+    // Ignore the error silently without logging or displaying any message
   }
+}
 
   // Listen for changes on both the day and agent fields
   dayField.add(agentField).change(function() {
