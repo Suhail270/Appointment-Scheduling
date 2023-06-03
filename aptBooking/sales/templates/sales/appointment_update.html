@@ -1,11 +1,20 @@
 <div class="max-w-lg mx-auto">
-    <form method="post" class="mt-5">
-        {% csrf_token %}
-        {{ form }}
-        <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">
-            Submit
-        </button>
-    </form>
+  <form method="post" class="mt-5">
+    {% csrf_token %}
+    {% for field in form %}
+      {% if field.name != 'customer' and  field.name != 'status' %}
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+            {{ field.label }}
+          </label>
+          {{ field }}
+        </div>
+      {% endif %}
+    {% endfor %}
+    <button type="submit" class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">
+      Update
+    </button>
+  </form>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -41,6 +50,12 @@ $(document).ready(function() {
             .text(timeSlot.choice);
           timeField.append(option);
         });
+
+        // Set the selected value for the time field
+        var selectedTime = "{{ appointment.time.id }}";
+        if (selectedTime !== "") {
+          timeField.val(selectedTime);
+        }
       },
       error: function() {
         console.log("Error retrieving available time slots");
@@ -68,6 +83,8 @@ $(document).ready(function() {
     // Delay the check to allow both fields to update
     setTimeout(checkFieldsChanged, 100);
   });
-});
 
+  // Initialize the available time slots on page load
+  updateAvailableTimeSlots();
+});
 </script>

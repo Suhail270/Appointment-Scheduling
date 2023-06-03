@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, reverse
+from django.urls import reverse_lazy, resolve
 from .forms import AppointmentForm
 from django.views import generic
 from django.contrib import messages
@@ -9,7 +10,8 @@ from .models import (
     Agent,
     Appointment,
     TimeChoices,
-    User
+    User,
+    Status
 )
 
 class AppointmentCreateView(generic.CreateView):
@@ -17,7 +19,7 @@ class AppointmentCreateView(generic.CreateView):
     form_class = AppointmentForm
 
     def get_success_url(self):
-        return reverse("")
+        return reverse_lazy('home')
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -44,14 +46,41 @@ class AppointmentCreateView(generic.CreateView):
         form.fields["time"].queryset = available_time_slots
 
         appointment.save()
-        # send_mail(
-        #     subject="An appointment has been created",
-        #     message="SUCCESS",
-        #     from_email="test@test.com",
-        #     recipient_list=["test2@test.com"]
-        # )
-        # messages.success(self.request, "You have successfully created a lead")
+        update_url = reverse("apt-update", kwargs={"pk": appointment.pk})
+        cancel_url = reverse("apt-cancel", kwargs={"pk": appointment.pk})
+        send_mail(
+            subject="An appointment has been created",
+            message="Feel free to update at: " + update_url + " and feel free to cancel at: " + cancel_url,
+            from_email="test@test.com",
+            recipient_list=["test2@test.com"]
+        )
+        messages.success(
+            self.request,
+            f"You have successfully created an appointment. You can update the details <a href='{update_url}'>here</a>."
+        )
         return super(AppointmentCreateView, self).form_valid(form)
+    
+class AppointmentUpdateView(generic.UpdateView):
+    model = Appointment
+    form_class = AppointmentForm
+    template_name = 'sales/appointment_update.html'
+    success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Appointment details have been updated.")
+        return super().form_valid(form)
+
+class AppointmentCancelView(generic.TemplateView):
+    template_name = 'sales/appointment_cancel.html'
+    
+    def get(self, request, *args, **kwargs):
+        
+        appointment = Appointment.objects.get(id = request.path[-2])
+        appointment.status = Status.objects.get(id = 2)
+        appointment.save()
+        
+        return super().get(request, *args, **kwargs)
+
 
 def get_available_time_slots(request):
     if request.method == "GET":
