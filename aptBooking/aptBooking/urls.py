@@ -19,6 +19,7 @@ from users import views as user_views
 from django.conf.urls import include
 from django.views.generic.base import TemplateView 
 from django.contrib.auth.views import LoginView
+from sales.views import AppointmentCreateView, AppointmentUpdateView, get_available_time_slots, AppointmentCancelView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -33,4 +34,12 @@ urlpatterns = [
 
     path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),
     #path('login/', LoginView.as_view(), name='login')
+
+    path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),
+    #path('login/', LoginView.as_view(), name='login')
+    path('appointments/create/', AppointmentCreateView.as_view(), name='apt-create'),
+    path('appointments/update/<int:pk>/', AppointmentUpdateView.as_view(), name='apt-update'),
+    path('appointments/cancel/<int:pk>/', AppointmentCancelView.as_view(), name='apt-cancel'),
+    path("get_available_time_slots/", get_available_time_slots, name="get_available_time_slots")
+
 ]
