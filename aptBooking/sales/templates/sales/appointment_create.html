@@ -1,0 +1,66 @@
+<div class="max-w-lg mx-auto">
+    <form method="post" class="mt-5">
+        {% csrf_token %}
+        {{ form }}
+        <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">
+            Submit
+        </button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Get the select fields by their IDs
+    var dayField = $("#id_day");
+    var agentField = $("#id_agent");
+    var timeField = $("#id_time");
+
+    // Store the selected values of day and agent
+    var selectedDay = dayField.val();
+    var selectedAgent = agentField.val();
+
+    // Function to check if both fields have changed
+    function checkFieldsChanged() {
+        var newDay = dayField.val();
+        var newAgent = agentField.val();
+
+        // If both fields have changed, update the selected values and trigger the AJAX request
+        if (newDay !== selectedDay && newAgent !== selectedAgent) {
+            selectedDay = newDay;
+            selectedAgent = newAgent;
+
+            // Send an AJAX request to retrieve available time slots for the selected day and agent
+            $.ajax({
+                url: "/get_available_time_slots/",
+                data: { day: selectedDay, agent: selectedAgent },
+                dataType: "json",
+                success: function(response) {
+                    // Clear the current options in the time field
+                    timeField.empty();
+
+                    // Add an empty option at the beginning
+                    timeField.append("<option value=''>---------</option>");
+
+                    // Add the new options based on the response
+                    $.each(response.time_slots, function(index, timeSlot) {
+                        var option = $("<option></option>")
+                            .attr("value", timeSlot.id)
+                            .text(timeSlot.choice);
+                        timeField.append(option);
+                    });
+                },
+                error: function() {
+                    console.log("Error retrieving available time slots");
+                }
+            });
+        }
+    }
+
+    // Listen for changes on both the day and agent fields
+    dayField.add(agentField).change(function() {
+        // Delay the check to allow both fields to update
+        setTimeout(checkFieldsChanged, 100);
+    });
+});
+</script>

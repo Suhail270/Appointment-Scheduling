@@ -58,10 +58,8 @@ class Agent(models.Model):
     
     def delete(self, *args, **kwargs):
         user = self.user
-        user_profile = self.user.userprofile
         super().delete(*args, **kwargs)
         user.delete()
-        user_profile.delete()
 
 class Customer(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
@@ -82,18 +80,21 @@ def get_default_status():
 
 class Appointment(models.Model):
 
-    customer = models.ForeignKey("Customer", null=True, blank=True, on_delete=models.SET_NULL)
-    agent = models.ForeignKey("Agent", null=True, blank=True, on_delete=models.SET_NULL)
-    day = models.DateField()
-
+    customer = models.ForeignKey("Customer", null=False, blank=False, on_delete=models.CASCADE)
+    agent = models.ForeignKey("Agent", null=False, blank=False, on_delete=models.CASCADE)
+    day = models.DateField(null=False, blank=False)
+    
     # Format for time slots: 10:00 AM - 10:30 AM, 19 characters.
 
-    time = models.ForeignKey("TimeChoices", null=True, blank=True, on_delete=models.SET_NULL)
-    preferred_contact_method = models.ForeignKey("PreferredContact", null=True, blank=True, on_delete=models.SET_NULL)
-    status = models.ForeignKey("Status", null=True, blank=True, default=get_default_status, on_delete=models.SET_NULL)
+    time = models.ForeignKey("TimeChoices", null=False, blank=False, on_delete=models.CASCADE)
+    preferred_contact_method = models.ForeignKey("PreferredContact", null=False, blank=False, on_delete=models.CASCADE)
+    status = models.ForeignKey("Status", null=False, blank=False, default=get_default_status, on_delete=models.CASCADE)
+
+    organization = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return "Agent " + str(self.agent.user) + " - " + str(self.customer.user)
+        
     
 class AgentCancelledAppointment(models.Model):
     appointment = models.ForeignKey("Appointment", null=True, blank=True, on_delete=models.SET_NULL)
