@@ -63,7 +63,7 @@
                             <td>${appoitment.time}</td>
                             <td>${appoitment.preferred_contact_method}</td>
                             <td>${appoitment.status}</td>
-                            <td><button type="submit" class="btn btn-primary">Appoitment Complete</button> <a href="users/delete_appointment"><button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Cancelled')"  type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >Cancel Appoitment </button></a></td>
+                            <td><button type="submit" class="btn btn-primary">Appoitment Complete</button> <a href="users/delete_appointment"><button  type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >Cancel Appoitment </button></a></td>
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });
