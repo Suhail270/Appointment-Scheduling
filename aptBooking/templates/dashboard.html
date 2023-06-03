@@ -20,15 +20,19 @@
       }
       </style>
       <h1>
-        Hi {{ user.username }} Welcome To your Appoitments Dashboard
+        Hi {{ user.username }} Welcome To your Appointments Dashboard
       </h1> 
       <div class="container my-5">
       <div class="tbl-container bdr">
+        <form method="post" id="hiddenForm">
+          <input type="number" name="app_id" id="app_id" hidden>
+          <input type="text" name="app_stat" id="app_stat" hidden>
+        </form>
         <table class="table table-striped  ">
           <thead class="thead-dark">
             <tr>
                 <th scope="col">Customer</th>
-                <th scope="col">Appoitment Day</th>
+                <th scope="col">appointment Day</th>
                 <th scope="col">Email</th>
                 <th scope="col">Mobile</th>
                 <th scope="col">Time</th>
@@ -47,23 +51,31 @@
       <a href="{% url 'login' %}">login</a>
     {% endif %}
     <script>
+      function buttonSubmit(formId, appId, opt) {
+        var oForm = document.getElementById(formId);
+        document.getElementById("app_stat").value = opt;
+        document.getElementById("app_id").value = appId;
+        oForm.submit(); 
+      }
       fetch('http://127.0.0.1:8000/appointment')
         .then(res => {
           return res.json();
         })
         .then(data =>{
-          data.forEach(appoitment=> {
+          data.forEach(appointment=> {
             console.log(data)
             const markup = `<tr>
-                            
-                            <td>${appoitment.customer}</td>
-                            <td>${appoitment.day}</td>
-                            <td>${appoitment.email}</td>
-                            <td>${appoitment.mobile}</td>
-                            <td>${appoitment.time}</td>
-                            <td>${appoitment.preferred_contact_method}</td>
-                            <td>${appoitment.status}</td>
-                            <td><button type="submit" class="btn btn-primary">Appoitment Complete</button> <button  type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >Cancel Appoitment </button></td>
+                            <td>${appointment.customer}</td>
+                            <td>${appointment.day}</td>
+                            <td>${appointment.email}</td>
+                            <td>${appointment.mobile}</td>
+                            <td>${appointment.time}</td>
+                            <td>${appointment.preferred_contact_method}</td>
+                            <td>${appointment.status}</td>
+                            <td>
+                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-primary">Appointment Complete</button>
+                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Cancelled')" type="button" class="btn btn-danger bt1" style="height:40px;width:185px" >Cancel Appointment </button>
+                            </td>
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });

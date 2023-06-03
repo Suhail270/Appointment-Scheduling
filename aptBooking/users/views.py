@@ -13,6 +13,8 @@ from django.views.generic import ListView
 from django_filters.views import FilterView
 from django_filters import FilterSet
 import simplejson
+from django.views.decorators.csrf import csrf_exempt
+import time
 
 def register(request):
     if request.method == "POST":
@@ -43,10 +45,41 @@ class appointmentsListView(SingleTableView):
         qs = qs.all().filter(agent_id = a_id)
         return qs
 
+@csrf_exempt
 def update_appointment_status(request):
+    if request.method == 'POST':
+        print(request.POST)
+        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
+        appointment.save()
+    stat_choices = [stat for stat in Status.objects.all()]
+    return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
+
+@csrf_exempt
+def dashboard_dropdown(request):
     if request.method == 'POST':
         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
         appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
+        appointment.save()
+    if True:
+        stat_choices = [stat for stat in Status.objects.all()]
+        return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
+
+@csrf_exempt
+def dashboard(request):
+    if request.method == 'POST':
+        print(request.POST)
+        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
+        appointment.save()
+    if True:
+        stat_choices = [stat for stat in Status.objects.all()]
+        return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
+
+def update_appointment_status_completed(request):
+    if request.method == 'POST':
+        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
         appointment.save()
     stat_choices = [stat for stat in Status.objects.all()]
     return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
