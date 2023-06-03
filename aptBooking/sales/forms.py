@@ -14,7 +14,6 @@ class DateInput(forms.DateInput):
 
 
 class appointmentform(forms.Form):
-    customerid = forms.IntegerField()
     # date = forms.DateField(initial=datetime.date.today)
     date = forms.DateField(widget = DateInput)
     time = forms.ModelChoiceField(queryset=TimeChoices.objects.all())

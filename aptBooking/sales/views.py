@@ -15,6 +15,7 @@ def customer_reg(request):
             user = User.objects.create(username=firstname,first_name = firstname,last_name = lastname, mobile = mobile, email = email)
             user.save()
             customer = Customer.objects.create(user = user)
+            request.session['customer_id'] = customer.id
             return redirect("appointment.html")
     form = customerform()
     return render(request,"customer.html",{'form': form})
@@ -27,10 +28,11 @@ def appointment(request):
             time = form.cleaned_data['time']
             agent = form.cleaned_data['agents']
             contactpref = form.cleaned_data['contactpref']
-            customerid = form.cleaned_data['customerid']
-            customer = Customer.objects.get(user_id = customerid)
+            customer_id = request.session.get('customer_id')
+            customer = Customer.objects.get(id = customer_id)
             appointment = Appointment.objects.create(customer = customer, day = date, agent = agent, time = time, preferred_contact_method = contactpref)
             appointment.save()
+            del request.session['customer_id']
     form = appointmentform()
     return render(request,"appointment.html",{'form': form})
 
