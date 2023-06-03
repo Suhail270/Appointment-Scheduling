@@ -1,21 +1,23 @@
 from django import forms
-from .models import TimeChoices, Customer
 
-# Create your forms here.
+from .models import TimeChoices,Agent,PreferredContact
+import datetime
+class customerform(forms.Form):
+    firstname = forms.CharField(max_length=100)
+    lastname = forms.CharField(max_length=100)
+    mobile = forms.CharField(max_length=30)
+    email = forms.EmailField()
 
-class NewCustForm(forms.Form):
-    first_name = forms.CharField(max_length = 200)
-    last_name = forms.CharField(max_length = 200)
-    email_address = forms.EmailField(max_length = 200)
-    mobile_number = forms.CharField()
-
-    # class Meta:
-    #     model = Customer
-    #     field = ['name', 'email', 'mobile']
 
 class DateInput(forms.DateInput):
     input_type = 'date'
 
-class NewApptForm(forms.Form):
+
+class appointmentform(forms.Form):
+    customerid = forms.IntegerField()
+    # date = forms.DateField(initial=datetime.date.today)
     date = forms.DateField(widget = DateInput)
     time = forms.ModelChoiceField(queryset=TimeChoices.objects.all())
+    agents = forms.ModelChoiceField(queryset=Agent.objects.all())
+    contactpref = forms.ModelChoiceField(queryset=PreferredContact.objects.all())
+
