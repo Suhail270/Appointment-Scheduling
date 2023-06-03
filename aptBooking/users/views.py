@@ -65,7 +65,6 @@ def dashboard_dropdown(request):
         stat_choices = [stat for stat in Status.objects.all()]
         return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
 
-@csrf_exempt
 def dashboard(request):
     if request.method == 'POST':
         print(request.POST)

@@ -25,6 +25,7 @@
       <div class="container my-5">
       <div class="tbl-container bdr">
         <form method="post" id="hiddenForm">
+          {% csrf_token %}
           <input type="number" name="app_id" id="app_id" hidden>
           <input type="text" name="app_stat" id="app_stat" hidden>
         </form>
@@ -55,7 +56,7 @@
         var oForm = document.getElementById(formId);
         document.getElementById("app_stat").value = opt;
         document.getElementById("app_id").value = appId;
-        oForm.submit(); 
+        oForm.submit();
       }
       fetch('http://127.0.0.1:8000/appointment')
         .then(res => {
