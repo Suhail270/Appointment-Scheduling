@@ -2,15 +2,30 @@
   <form method="post" class="mt-5">
     {% csrf_token %}
     {% for field in form %}
-      {% if field.name != 'customer' and  field.name != 'status' %}
+      {% if field.name == 'customer' or  field.name == 'status' %}
+        
+        <div class="mb-4" hidden>
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+            {{ field.label }}
+          </label>
+          {{ field }}
+        </div>
+
+        {% endif %}
+
+        {% if field.name != 'customer' and  field.name != 'status' %}
+
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
             {{ field.label }}
           </label>
           {{ field }}
         </div>
-      {% endif %}
+
+        {% endif %}
+
     {% endfor %}
+
     <button type="submit" class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">
       Update
     </button>

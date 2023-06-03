@@ -24,9 +24,6 @@ class AppointmentCreateView(generic.CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         user = self.request.user
-        # form.fields['agent'].queryset = Agent.objects.filter(
-        #     organization=user.userprofile
-        # )
         return form
 
     def form_valid(self, form):
@@ -59,23 +56,45 @@ class AppointmentCreateView(generic.CreateView):
             f"You have successfully created an appointment. You can update the details <a href='{update_url}'>here</a>."
         )
         return super(AppointmentCreateView, self).form_valid(form)
-    
+
+
 class AppointmentUpdateView(generic.UpdateView):
     model = Appointment
+    template_name = "sales/appointment_update.html"
     form_class = AppointmentForm
-    template_name = 'sales/appointment_update.html'
-    success_url = reverse_lazy('home')
+
+    def get_success_url(self):
+        return reverse_lazy('home')
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        user = self.request.user
+        return form
 
     def form_valid(self, form):
-        messages.success(self.request, "Appointment details have been updated.")
-        return super().form_valid(form)
+        appointment = form.save(commit=False)
+        appointment.save()
+        update_url = reverse("apt-update", kwargs={"pk": appointment.pk})
+        cancel_url = reverse("apt-cancel", kwargs={"pk": appointment.pk})
+        send_mail(
+            subject="An appointment has been created",
+            message="Feel free to update at: " + update_url + " and feel free to cancel at: " + cancel_url,
+            from_email="test@test.com",
+            recipient_list=["test2@test.com"]
+        )
+        messages.success(
+            self.request,
+            f"You have successfully created an appointment. You can update the details <a href='{update_url}'>here</a>."
+        )
+        return super(AppointmentUpdateView, self).form_valid(form)
+
 
 class AppointmentCancelView(generic.TemplateView):
     template_name = 'sales/appointment_cancel.html'
     
     def get(self, request, *args, **kwargs):
-        
-        appointment = Appointment.objects.get(id = request.path[-2])
+
+        appointment = Appointment.objects.get(id = int(request.path.split('/')[-2]))
         appointment.status = Status.objects.get(id = 2)
         appointment.save()
         
