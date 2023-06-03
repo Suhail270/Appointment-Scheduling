@@ -13,6 +13,7 @@ from django.views.generic import ListView
 #from django_filters.views import FilterView
 #from django_filters import FilterSet
 import simplejson
+from django.core.mail import send_mail
 
 def register(request):
     if request.method == "POST":
@@ -58,11 +59,22 @@ def delete_appointment_status(request):
         reason_for_cancellation = request.POST.get('reason_for_cancel')
         status_id = Status.objects.filter(choice="Cancelled")
         print(status_id)
+
+        #updating status of appointment to cancelled
         appointment_id.status = Status.objects.get(pk = 3)
         appointment_id.save()
 
+        #adding appointment to cancelled appointments table
         new_record = AgentCancelledAppointment(appointment= appointment_id, reason= reason_for_cancellation)
         new_record.save()
+
+        #sending an email
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        email_from = appointment_id.agent.user.email
+        recipient_list = [appointment_id.customer.user.email, ]
+        send_mail(subject, message, email_from, recipient_list)
+
     return render(request=request, template_name="delete_appointment.html")
 
 
@@ -99,3 +111,14 @@ def appointment_api(request):
         )
         # serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(simplejson.loads(json), safe = False)
+
+
+# def send_email(request):
+#     appointment_id = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+#     subject = request.POST.get('subject')
+#     message = request.POST.get('message')
+#     #message = f'Hi {user.username}, thank you for registering.'
+#     email_from = appointment_id.agent.user.email
+#     recipient_list = [appointment_id.customer.user.email, ]
+#     send_mail( subject, message, email_from, recipient_list)
+    
