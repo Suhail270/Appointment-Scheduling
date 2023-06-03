@@ -1,14 +1,17 @@
 from django import forms
-from sales.models import TimeChoices,Agent,PreferredContact
+
+from .models import TimeChoices,Agent,PreferredContact
 import datetime
 class customerform(forms.Form):
-    firstname = forms.CharField(label='Enter Firstname:',max_length=100)
-    lastname = forms.CharField(label='Enter lastname:',max_length=100)
-    mobile = forms.CharField(label='Enter Mobile No:',max_length=30)
-    email = forms.EmailField(label='Enter email:')
+    firstname = forms.CharField(max_length=100)
+    lastname = forms.CharField(max_length=100)
+    mobile = forms.CharField(max_length=30)
+    email = forms.EmailField()
+
 
 class DateInput(forms.DateInput):
     input_type = 'date'
+
 
 class appointmentform(forms.Form):
     customerid = forms.IntegerField()
@@ -17,3 +20,4 @@ class appointmentform(forms.Form):
     time = forms.ModelChoiceField(queryset=TimeChoices.objects.all())
     agents = forms.ModelChoiceField(queryset=Agent.objects.all())
     contactpref = forms.ModelChoiceField(queryset=PreferredContact.objects.all())
+

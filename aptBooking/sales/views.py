@@ -1,3 +1,4 @@
+
 from django.shortcuts import render,redirect
 from .forms import customerform, appointmentform
 from sales.models import Appointment, Agent, User, Customer, Status, TimeChoices, PreferredContact
@@ -35,3 +36,4 @@ def appointment(request):
 
 def success(request):
     return render(request,"success.html")
+

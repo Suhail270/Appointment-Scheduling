@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 
     # Local apps
     'users',
-    'sales'
+    'sales',
 ]
 
 MIDDLEWARE = [
