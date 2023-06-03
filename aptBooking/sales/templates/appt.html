@@ -1,0 +1,9 @@
+<!--Appointment--> 
+<div class="container py-6">
+	<h1>Appointment Details</h1>
+	<form method="POST">
+		{% csrf_token %}
+		{{ apptform }}                    
+		<button class="btn btn-primary" type="submit">Book Appointment</button>
+	</form>
+</div>

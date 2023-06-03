@@ -102,5 +102,3 @@ class AgentCancelledAppointment(models.Model):
 
     def __str__(self):
         return "Agent " + str(self.appointment.agent) + " - " + str(self.appointment.customer)
-
-
