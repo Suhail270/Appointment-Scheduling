@@ -70,10 +70,8 @@ class Customer(models.Model):
     
     def delete(self, *args, **kwargs):
         user = self.user
-        user_profile = self.user.userprofile
         super().delete(*args, **kwargs)
         user.delete()
-        user_profile.delete()
 
 def get_default_status():
     return Status.objects.get_or_create(choice="Pending")[0]

@@ -1,14 +1,65 @@
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <div class="max-w-lg mx-auto">
     <form method="post" class="mt-5">
         {% csrf_token %}
-        {{ form }}
+
+        {% for field in form %}
+        {% if field.name == 'customer' or field.name == 'status' %}
+        
+        <div class="mb-4" hidden>
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+            {{ field.label }}
+          </label>
+          {{ field }}
+        </div>
+
+        {% endif %}
+
+        {% if field.name != 'customer' and field.name != 'status' %}
+        
+        {% if field.name == 'day' %}
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+            {{ field.label }}
+          </label>
+          {{ field }}
+          <script>
+            $(document).ready(function() {
+              $("#{{ field.id_for_label }}").datepicker({
+                minDate: 0,
+                maxDate: "+30d",
+                dateFormat: "yy-mm-dd",
+                changeMonth: true,
+                changeYear: true
+              });
+            });
+          </script>
+        </div>
+        {% else %}
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+            {{ field.label }}
+          </label>
+          {{ field }}
+        </div>
+        {% endif %}
+
+        {% endif %}
+
+    {% endfor %}
+
         <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">
             Submit
         </button>
     </form>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
 <script>
 $(document).ready(function() {
   // Get the select fields by their IDs
@@ -69,5 +120,4 @@ $(document).ready(function() {
     setTimeout(checkFieldsChanged, 100);
   });
 });
-
 </script>
