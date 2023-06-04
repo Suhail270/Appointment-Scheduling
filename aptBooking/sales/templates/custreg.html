@@ -1,12 +1,35 @@
- 
+{% load static %} 
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/customercss.css' %}">
+</head>
+
+<body>
 
 <!--Register--> 
-<div class="container py-5">
-	<h1>Customer Details</h1>
-	<form method="POST">
-		{% csrf_token %}
-		{{ custform }}                    
+<div class="customerform">
+    <!-- <div class="pretty-box">
+        <h5>Book your appointment with us today!</h5>
+    </div> -->
+    <div class="custheader">
+	    <h1>Customer Details</h1>
+    </div>
+    <div class="formdetails">
+	    <form method="POST">
+		    {% csrf_token %}
+		    {{ custform }}   
+    </div> 
+    <div class="custbutton">               
 		<button class="btn btn-primary" type="submit"><a href="/sales/appt">Next</a></button>
+    </div> 
 	</form>
 </div>
+
+</body>
+</html>
+
 
