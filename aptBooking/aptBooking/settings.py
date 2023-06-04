@@ -139,3 +139,4 @@ LOGOUT_REDIRECT_URL = '/users/login/'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = 'sales.User'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
