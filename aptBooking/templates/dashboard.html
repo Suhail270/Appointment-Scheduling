@@ -24,6 +24,12 @@
       </h1> 
       <div class="container my-5">
       <div class="tbl-container bdr">
+
+        <form method="post" id="hiddenForm">
+          {% csrf_token %}
+          <input type="number" name="app_id" id="app_id" hidden>
+          <input type="text" name="app_stat" id="app_stat" hidden>
+        </form>
         <table class="table table-striped  ">
           <thead class="thead-dark">
             <tr>
@@ -47,6 +53,26 @@
       <a href="{% url 'login' %}">login</a>
     {% endif %}
     <script>
+      function buttonSubmit(formId, appId) {
+        //var oForm = document.getElementById(formId);
+        //document.getElementById("app_stat").value = opt;
+        document.getElementById("app_id").value = appId;
+        //oForm.submit();
+      }
+
+      function testJS(){
+        //rest of the code
+        var appId = document.getElementById("ap").value;
+        localStorage.setItem('appointment_id',appId);
+        console.log("---------------------------------------");
+        console.log(appId);
+        console.log("---------------------------------------");
+        //document.location.href=url;
+        // console.log("let's get this party started");
+
+    }
+
+
       fetch('http://127.0.0.1:8000/appointment')
         .then(res => {
           return res.json();
@@ -63,11 +89,21 @@
                             <td>${appoitment.time}</td>
                             <td>${appoitment.preferred_contact_method}</td>
                             <td>${appoitment.status}</td>
-                            <td><button type="submit" class="btn btn-primary">Appoitment Complete</button> <a href="users/delete_appointment"><button  type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >Cancel Appoitment </button></a></td>
+                            <td>
+                              <button type="submit" class="btn btn-primary">Appoitment Complete</button> 
+                              <a href="users/delete_appointment"> 
+                                <button id = "ap" value="${appoitment.id}" onclick="testJS()" "type="button" class="btn btn-danger bt1" style="height:40px;width:185px" >
+                                  Cancel Appoitment 
+                                </button> 
+                              </a>
+                            </td>
+                            
                             </tr>`
+                            
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });
         })
         .catch(error => console.log(error));
     </script>
+    
 {% endblock %}
