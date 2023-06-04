@@ -4,7 +4,7 @@ from .forms import NewUserForm
 from django.contrib.auth import login
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from sales.models import Appointment, Agent, User, Customer, Status, TimeChoices, PreferredContact
+from sales.models import Appointment, Agent, User, Customer, Status, TimeChoices, PreferredContact,AgentCancelledAppointment
 from sales.serializers import appointmentSerializer
 from django.http.response import JsonResponse
 from .tables import AppointmentTable
@@ -15,6 +15,7 @@ from django_filters import FilterSet
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 import time
+from django.core.mail import send_mail
 
 def register(request):
     if request.method == "POST":
@@ -113,3 +114,34 @@ def appointment_api(request):
         )
         # serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(simplejson.loads(json), safe = False)
+def appointments(request):
+    return render (request = request, template_name = "appointments.html")
+
+#fetching appointment based on APPOINTMENT ID
+def delete_appointment_status(request):
+    if request.method == 'POST':
+        
+        appointment_id = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        reason_for_cancellation = request.POST.get('reason_for_cancel')
+        status_id = Status.objects.filter(choice='Cancelled').values('id')[0]['id']  
+        
+        print("---- appointment_id ---- ")
+        print(request.POST.get('app_id') == "")
+
+        #updating status of appointment to cancelled
+        appointment_id.status = Status.objects.get(pk = status_id)
+        appointment_id.save()
+
+        #adding appointment to cancelled appointments table
+        new_record = AgentCancelledAppointment(appointment= appointment_id, reason= reason_for_cancellation)
+        new_record.save()
+
+        #sending an email
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        email_from = appointment_id.agent.user.email
+        recipient_list = [appointment_id.customer.user.email, ]
+        send_mail(subject, message, email_from, recipient_list)
+
+    return render(request=request, template_name="delete_appointment.html")
+
