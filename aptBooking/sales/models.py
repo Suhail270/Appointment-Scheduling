@@ -88,7 +88,7 @@ class Appointment(models.Model):
     preferred_contact_method = models.ForeignKey("PreferredContact", null=False, blank=False, on_delete=models.CASCADE)
     status = models.ForeignKey("Status", null=False, blank=False, default=get_default_status, on_delete=models.CASCADE)
 
-    organization = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.SET_NULL)
+    #organization = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return "Agent " + str(self.agent.user) + " - " + str(self.customer.user)

@@ -1,10 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/appt.css' %}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+</head>
+<body>
 <div class="max-w-lg mx-auto">
   <form method="post" class="mt-5">
     {% csrf_token %}
+    <h2> <u>APPOINTMENT UPDATE</u></h2>
+    <br>
     {% for field in form %}
       {% if field.name == 'customer' or  field.name == 'status' %}
         
@@ -55,6 +63,7 @@
         </button>
     </form>
 </div>
+</body>
 
 
 
@@ -124,3 +133,4 @@ function checkFieldsChanged() {
   });
 });
 </script>
+{% endblock content %}

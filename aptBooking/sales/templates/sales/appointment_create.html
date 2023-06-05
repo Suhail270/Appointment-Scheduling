@@ -1,29 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/appt.css' %}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-<div class="max-w-lg mx-auto">
+</head>
+<body>
+  <!-- class="max-w-lg mx-auto" -->
+<div class="row clearfix">
     <form method="post" class="mt-5">
         {% csrf_token %}
-
+        <h2 class="sec-title"> <u>APPOINTMENT DETAILS</u></h2>
+        <br>
         {% for field in form %}
         {% if field.name == 'customer' or field.name == 'status' %}
         
-        <div class="mb-4" hidden>
+        <div class="form-group" hidden>
           <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
             {{ field.label }}
           </label>
+          
           {{ field }}
+          
         </div>
+        
 
         {% endif %}
 
         {% if field.name != 'customer' and field.name != 'status' %}
         
         {% if field.name == 'day' %}
-        <div class="mb-4">
+        <div class="form-group">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
-            {{ field.label }}
+            {{ field.label }}:
           </label>
           {{ field }}
           <script>
@@ -38,13 +49,15 @@
             });
           </script>
         </div>
+        
         {% else %}
-        <div class="mb-4">
+        <div class="form-group">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
-            {{ field.label }}
+            {{ field.label }} :
           </label>
           {{ field }}
         </div>
+        <br>
         {% endif %}
 
         {% endif %}
@@ -56,10 +69,7 @@
         </button>
     </form>
 </div>
-
-
-
-
+</body>
 <script>
 $(document).ready(function() {
   // Get the select fields by their IDs
@@ -123,5 +133,12 @@ function checkFieldsChanged() {
     // Delay the check to allow both fields to update
     setTimeout(checkFieldsChanged, 100);
   });
+
+  $("#id_field_name").autocomplete({
+    source: "/your_autocomplete_endpoint/",
+    minLength: 1,
+    delay: 300
+  });
 });
 </script>
+{% endblock content %}
