@@ -28,13 +28,10 @@
       <h3 class="h">
         Hi {{ user.username }}, Welcome To Your Appointments Dashboard
       </h3> 
-      <form method="post">
-
-        { cont.as_p }
-      </form>
       <div class="container my-5">
       <div class="tbl-container bdr">
         <form method="post" id="hiddenForm">
+          {% csrf_token %}
           <input type="number" name="app_id" id="app_id" hidden>
           <input type="text" name="app_stat" id="app_stat" hidden>
         </form>
@@ -94,7 +91,7 @@
                             <td>${appointment.preferred_contact_method}</td>
                             <td>${appointment.status}</td>
                             <td>
-                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-primary" style="height:40px;width:185px" >Appointment Complete</button>
+                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-primary"  >Appointment Complete</button>
                               <a href="users/delete_appointment">
                                 <button id = "ap" value="${appointment.id}" onclick="testJS()" type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >
                                   Cancel Appoitment </button>

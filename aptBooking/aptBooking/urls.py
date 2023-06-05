@@ -35,7 +35,7 @@ urlpatterns = [
     path('sales/',include('sales.urls')),
 
 
-    path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),
+    path('', views.dashboard, name='home'),
     #path('login/', LoginView.as_view(), name='login')
 
     
@@ -43,7 +43,7 @@ urlpatterns = [
     path('sales/customer_reg/appointment_create.html', AppointmentCreateView.as_view(), name='apt-create'),
     path('appointments/update/<int:pk>/', AppointmentUpdateView.as_view(), name='apt-update'),
     path('appointments/cancel/<int:pk>/', AppointmentCancelView.as_view(), name='apt-cancel'),
-    path("get_available_time_slots/", get_available_time_slots, name="get_available_time_slots")
+    path("get_available_time_slots/", get_available_time_slots, name="get_available_time_slots"),
 
 
     # path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),
