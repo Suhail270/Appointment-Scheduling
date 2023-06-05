@@ -8,8 +8,9 @@
       <style>
        .tbl-container {
         width: 1000px;
-        margin-top: 10px;
-        margin-left: 10px;
+        
+        margin-left: auto;
+        margin-right: auto;
       }
       .bdr {
         border-radius: 6px;
@@ -18,10 +19,19 @@
       .bt1 {
         margin-top: 10px;
       }
+      .h {
+        padding: 20px;
+        text-align:center
+      }
       </style>
-      <h1>
-        Hi {{ user.username }} Welcome To your Appointments Dashboard
-      </h1> 
+      
+      <h3 class="h">
+        Hi {{ user.username }}, Welcome To Your Appointments Dashboard
+      </h3> 
+      <form method="post">
+
+        { cont.as_p }
+      </form>
       <div class="container my-5">
       <div class="tbl-container bdr">
         <form method="post" id="hiddenForm">
@@ -57,6 +67,17 @@
         document.getElementById("app_id").value = appId;
         oForm.submit(); 
       }
+      function testJS(){
+        //rest of the code
+        var appId = document.getElementById("ap").value;
+        localStorage.setItem('appointment_id',appId);
+        console.log("---------------------------------------");
+        console.log(appId);
+        console.log("---------------------------------------");
+        //document.location.href=url;
+        // console.log("let's get this party started");
+
+    }
       fetch('http://127.0.0.1:8000/appointment')
         .then(res => {
           return res.json();
@@ -74,7 +95,10 @@
                             <td>${appointment.status}</td>
                             <td>
                               <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-primary" style="height:40px;width:185px" >Appointment Complete</button>
-                              <a href="users/delete_appointment"><button  onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Canceled')" type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >Cancel Appoitment </button></a>
+                              <a href="users/delete_appointment">
+                                <button id = "ap" value="${appointment.id}" onclick="testJS()" type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >
+                                  Cancel Appoitment </button>
+                              </a>
                             </td>
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
