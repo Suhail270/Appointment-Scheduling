@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard with Flexmonster</title>
+    <script src="https://cdn.flexmonster.com/flexmonster.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.flexmonster.com/demo.css">
+  </head>
+  <body>
+  <div id="pivot-table-container" data-url="{% url 'pivot_data' %}"></div>
+  <div id="pivot-chart-container" hidden></div>
+  <script>
+    function processData(dataset) {
+        return dataset;
+        var result = [];
+        console.log(dataset);
+        // dataset = JSON.parse(dataset);
+        dataset.forEach(item => {
+            console.log(item);
+            console.log(item.fields);
+            result.push(item.fields);
+        });
+        console.log(result)
+        return result;
+    }
+    $.ajax({
+        url: $("#pivot-table-container").attr("data-url"),
+        dataType: 'json',
+        success: function(data) {
+            new Flexmonster({
+                container: "#pivot-table-container",
+                componentFolder: "https://cdn.flexmonster.com/",
+                width: "100%",
+                height: 430,
+                toolbar: true,
+                report: {
+                    dataSource: {
+                        type: "json",
+                        data: processData(data),
+                        mapping: {
+                            "customer": {
+                                "type": "text",
+                                "caption": "Customer"
+                            },                            
+                            "email": {
+                                "type": "text",
+                                "caption": "Email"
+                            },
+                            "mobile": {
+                                "type": "text",
+                                "caption": "Mobile"
+                            },
+                            "day": {
+                                "type": "date",
+                                "caption": "Day"
+                            },
+                            "time": {
+                                "type": "text",
+                                "caption": "Time"
+                            },
+                            "preferred_contact_method": {
+                                "type": "text",
+                                "caption": "Preferred Contact Method"
+                            },
+                            "status": {
+                                "type": "text",
+                                "caption": "Status"
+                            }
+                        }
+                    },
+                    slice: {
+                        rows: [
+                            {
+                                uniqueName: "id"
+                            }
+                        ],
+                        columns: [
+                            {
+                                uniqueName: "[Measures]"
+                            }
+                        ],
+                        measures: [
+                                {
+                                    uniqueName: "customer"
+                                },
+                                {
+                                    uniqueName: "email"
+                                },
+                                {
+                                    uniqueName: "mobile"
+                                },
+                                {
+                                    uniqueName: "day"
+                                },
+                                {
+                                    uniqueName: "time"
+                                },
+                                {
+                                    uniqueName: "preferred_contact_method"
+                                },
+                                {
+                                    uniqueName: "status"
+                                }
+                        ]
+                    },
+                    "options": {
+                        "showGrandTotals": "false",
+                        "grid": {
+                            "type": "flat"
+                        }
+                    }
+                }
+            });
+            new Flexmonster({
+                container: "#pivot-chart-container",
+                componentFolder: "https://cdn.flexmonster.com/",
+                width: "100%",
+                height: 430,
+                //toolbar: true,
+                report: {
+                    dataSource: {
+                        type: "json",
+                        data: processData(data)
+                    },
+                    slice: {},
+                    "options": {
+                        "viewType": "charts",
+                        "chart": {
+                            "type": "pie"
+                        }
+                    }
+                }
+            });
+        }
+    });
+  </script>
+  </body>
+  {% endblock %}

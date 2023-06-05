@@ -29,5 +29,9 @@ urlpatterns = [
     # path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),
     path('', views.dashboard, name='home'),
     path('login/', LoginView.as_view(), name='login'),
-    path('appointment', views.appointment_api)
+    path('appointment', views.appointment_api),
+    path('analytics', views.dashboard_with_pivot, name='dahsboard_with_pivot'),
+    path('analytics_data', views.appointment_api, name='pivot_data'),
+    path('chart', views.chart_test, name='chart'),
+    path('chart_data', views.chart_weekly_appointments, name='chart_data')
 ]

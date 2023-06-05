@@ -15,6 +15,7 @@ from django_filters import FilterSet
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 import time
+import datetime
 
 def register(request):
     if request.method == "POST":
@@ -45,7 +46,7 @@ class appointmentsListView(SingleTableView):
         qs = qs.all().filter(agent_id = a_id)
         return qs
 
-@csrf_exempt
+
 def update_appointment_status(request):
     if request.method == 'POST':
         print(request.POST)
@@ -74,6 +75,14 @@ def dashboard(request):
     if True:
         stat_choices = [stat for stat in Status.objects.all()]
         return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
+
+def dashboard_with_pivot(request):
+    return render(request, 'dashboard_with_pivot.html', {})
+
+# def pivot_data(request):
+#     dataset = Order.objects.all()
+#     data = serializers.serialize('json', dataset)
+#     return JsonResponse(data, safe=False)
 
 def update_appointment_status_completed(request):
     if request.method == 'POST':
@@ -112,3 +121,56 @@ def appointment_api(request):
         )
         # serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(simplejson.loads(json), safe = False)
+
+def chart_test(request):
+    return render(request, "chart_test.html", {})
+
+def chart_weekly_appointments(request):
+    dates = []
+    completed = []
+    cancelled = []
+    agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+    appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+    comp_stat = Status.objects.get(choice = "Completed")
+    canc_stat = Status.objects.get(choice = "Cancelled")
+    for i in range(7):
+        date = datetime.date.today() - datetime.timedelta(days = i)
+        dates.append(date)
+        date_appointments = appointments.filter(day = date)
+        completed.append(date_appointments.filter(status = comp_stat).count())
+        cancelled.append(date_appointments.filter(status = canc_stat).count())
+    data = {
+        "labels":dates[::-1],
+        "chartLabel": "Completed",
+        "chartdata":completed[::-1],
+        "chartLabel2": "Cancelled",
+        "chartdata2":cancelled[::-1],
+    }
+    return JsonResponse(data, safe=False)
+    
+    
+
+
+def chart_data(request):
+    authentication_classes = []
+    permission_classes = []
+    labels = [
+        'January',
+        'February', 
+        'March', 
+        'April', 
+        'May', 
+        'June', 
+        'July'
+        ]
+    chartLabel = "my data"
+    chartdata = [0, 10, 5, 2, 20, 30, 45]
+    data ={
+                    "labels":labels,
+                    "chartLabel":chartLabel,
+                    "chartdata":chartdata,
+            }
+    print("@@@@@@@@@@@@")
+    print(data)
+    print("@@@@@@@@@@@@")
+    return JsonResponse(data, safe=False)
