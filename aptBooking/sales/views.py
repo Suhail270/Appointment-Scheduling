@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect, reverse
 from django.urls import reverse_lazy, resolve
 from .forms import AppointmentForm, customerform
@@ -155,4 +156,5 @@ def get_available_time_slots(request):
         available_time_slots = [{"id": time_slot.id, "choice": time_slot.choice} for time_slot in all_time_slots]
 
         return JsonResponse({"time_slots": available_time_slots})
+
 
