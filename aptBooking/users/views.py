@@ -91,6 +91,55 @@ def update_appointment_status_completed(request):
     return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
 
 @csrf_exempt
+def search_appointment_api(request):
+        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        if len(agents) == 0:
+            return JsonResponse(None, safe = False)
+        
+        #if date or time is Null, display all appointments
+        if (date is None):
+            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+
+        #if not, display appointments of given date and time    
+        else:
+            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id), day = date, time_id = time_slot)
+
+        # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
+        # 'customer_first_name': str(appointment.customer.user.first_name),
+        #             'customer_last_name': str(appointment.customer.user.last_name),
+        json = simplejson.dumps(
+            [
+                {
+                    'id': str(appointment.id),
+                    'customer': str(appointment.customer.user.username),
+                    'email': str(appointment.customer.user.email),
+                    'mobile': str(appointment.customer.user.mobile),
+                    'day': str(appointment.day),
+                    'time': str(appointment.time.choice),
+                    'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'status': str(appointment.status.choice)
+                } for appointment in appointments
+            ]
+        )
+        # serialized = appointmentSerializer(appointments, many = True)
+        return JsonResponse(simplejson.loads(json), safe = False)
+
+
+@csrf_exempt
+def search_demo(request):
+    global date
+    global time_slot
+    date = request.POST.get('date')
+    print("-----------------------")
+    time_slot = request.POST.get('time')
+    print(date)
+    print(time_slot)
+
+    time_choices = [stat for stat in TimeChoices.objects.all()]
+    return render(request = request, context={'choices': time_choices}, template_name = "search_demo.html")
+
+
+@csrf_exempt
 def appointment_api(request):
     if request.method == 'GET':
         agents = Agent.objects.all().select_related().filter(user_id = request.user.id)

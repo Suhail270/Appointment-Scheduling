@@ -35,6 +35,7 @@
       <div class="container my-5">
       <div class="tbl-container bdr">
         <form method="post" id="hiddenForm">
+          {% csrf_token %}
           <input type="number" name="app_id" id="app_id" hidden>
           <input type="text" name="app_stat" id="app_stat" hidden>
         </form>

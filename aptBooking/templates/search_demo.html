@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Appointment{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <h2>Here:</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }} 
+        
+        <p>Please select a date:</p>
+        <input type="date" name="date" id="date" required>
+        
+        <!-- <p>Please select the time slot:</p>
+        <input type="text" name="time" id="time" > -->
+
+        <select name="time" id="time" required>
+            {% for choice in choices %}
+            <li>{{ link }}</li>
+            <option value={{ choice.id }}>{{ choice.choice }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Submit</button>
+        <a href="/"><button type="button"> Cancel </button></a>
+    </form>
+
+    <div class="container my-5">
+        <div class="tbl-container bdr">
+
+        <form method="post" id="hiddenForm">
+            {% csrf_token %}
+            <input type="number" name="app_id" id="app_id" hidden>
+            <input type="text" name="app_stat" id="app_stat" hidden>
+        </form>
+
+        <table class="table table-striped  ">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Customer</th>
+                <th scope="col">Appoitment Day</th>
+                <th scope="col">Email</th>
+                <th scope="col">Mobile</th>
+                <th scope="col">Time</th>
+                <th scope="col">Preferred Contact</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    {% else %}
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a>
+    {% endif %}
+
+    <script>
+        function buttonSubmit(formId, appId, opt) {
+            var oForm = document.getElementById(formId);
+            document.getElementById("app_stat").value = opt;
+            document.getElementById("app_id").value = appId;
+            oForm.submit();
+        }
+
+        function testJS(){
+            //rest of the code
+            var appId = document.getElementById("ap").value;
+            localStorage.setItem('appointment_id',appId);
+            console.log("---------------------------------------");
+            console.log(appId);
+            console.log("---------------------------------------");
+            //document.location.href=url;
+            // console.log("let's get this party started");
+        }
+
+        
+        fetch('http://127.0.0.1:8000/search')
+        .then(res => {
+            return res.json();
+        })
+        .then(data =>{
+            data.forEach(appoitment=> {
+            console.log(data)
+            const markup = `<tr>
+                            
+                            <td>${appoitment.customer}</td>
+                            <td>${appoitment.day}</td>
+                            <td>${appoitment.email}</td>
+                            <td>${appoitment.mobile}</td>
+                            <td>${appoitment.time}</td>
+                            <td>${appoitment.preferred_contact_method}</td>
+                            <td>${appoitment.status}</td>
+                            <td>
+                                <button onclick="buttonSubmit('hiddenForm', ${appoitment.id}, 'Completed')" type="button" class="btn btn-primary">Appointment Complete</button> 
+                                <a href="/users/delete_appointment"> 
+                                <button id = "ap" value="${appoitment.id}" onclick="testJS()" "type="button" class="btn btn-danger bt1" style="height:40px;width:185px" >
+                                    Cancel Appoitment 
+                                </button> 
+                                </a>
+                            </td>
+                            
+                            </tr>`
+                            
+            document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
+            });
+        })
+        .catch(error => console.log(error));
+        
+
+    </script>
+{% endblock %}
