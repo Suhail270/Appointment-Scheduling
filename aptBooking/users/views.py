@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import NewUserForm
+from .forms import NewUserForm ,DateForm 
 from django.contrib.auth import login
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -24,10 +24,15 @@ def register(request):
             user = form.save()
             login(request, user)
             messages.success(request, "Registration successful." )
-            return redirect("dashboard.html")
+            
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = NewUserForm()
     return render (request=request, template_name="signup.html", context={"register_form":form})
+
+def dateTime(request):
+    context={}
+    context['context']=DateForm()
+    return render(request=request, template_name="dashboard.html",context={"context":context})
 
 # class AppointmentFilter(FilterSet):
 #     Class Meta:

@@ -8,6 +8,9 @@
     {% csrf_token %}
     {{ form.as_p }} 
     
+
+    <input type="number" name="app_id" id="app_id" hidden>
+    
     <p>Please state the reason for cancellation:</p>
     <input type="text" name="reason_for_cancel" id="reason_for_cancel" required>
 
@@ -20,4 +23,14 @@
     <button type="submit">Submit</button>
     <a href="/"><button type="button"> Cancel </button></a>
   </form>
+
+  <script>
+    
+      var ap_id = document.getElementById("app_id");
+      ap_id.value = localStorage.getItem('appointment_id');
+      console.log("---------------------------------------");
+        console.log(ap_id.innerHTML);
+        console.log("---------------------------------------");
+    
+  </script>
 {% endblock %}
