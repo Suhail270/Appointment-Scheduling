@@ -53,11 +53,11 @@
       <a href="{% url 'login' %}">login</a>
     {% endif %}
     <script>
-      function buttonSubmit(formId, appId) {
-        //var oForm = document.getElementById(formId);
-        //document.getElementById("app_stat").value = opt;
+      function buttonSubmit(formId, appId, opt) {
+        var oForm = document.getElementById(formId);
+        document.getElementById("app_stat").value = opt;
         document.getElementById("app_id").value = appId;
-        //oForm.submit();
+        oForm.submit();
       }
 
       function testJS(){
@@ -90,7 +90,7 @@
                             <td>${appoitment.preferred_contact_method}</td>
                             <td>${appoitment.status}</td>
                             <td>
-                              <button type="submit" class="btn btn-primary">Appoitment Complete</button> 
+                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-primary">Appointment Complete</button> 
                               <a href="users/delete_appointment"> 
                                 <button id = "ap" value="${appoitment.id}" onclick="testJS()" "type="button" class="btn btn-danger bt1" style="height:40px;width:185px" >
                                   Cancel Appoitment 

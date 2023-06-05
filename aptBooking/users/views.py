@@ -61,8 +61,6 @@ def delete_appointment_status(request):
         reason_for_cancellation = request.POST.get('reason_for_cancel')
         status_id = Status.objects.filter(choice='Cancelled').values('id')[0]['id']  
         
-        
-
         #updating status of appointment to cancelled
         appointment_id.status = Status.objects.get(pk = status_id)
         appointment_id.save()
@@ -74,9 +72,12 @@ def delete_appointment_status(request):
         #sending an email
         subject = request.POST.get('subject')
         message = request.POST.get('message')
+        message+= " \nTo reschedule the appointment, please visit: \n<APPOINTMENT BOOKING URL HERE>"
         email_from = appointment_id.agent.user.email
         recipient_list = [appointment_id.customer.user.email, ]
-        send_mail(subject, message, email_from, recipient_list)
+        send_mail(subject, message , email_from, recipient_list)
+
+
 
     return render(request=request, template_name="delete_appointment.html")
 
@@ -84,6 +85,55 @@ def delete_appointment_status(request):
 def appointments(request):
     return render (request = request, template_name = "appointments.html")
 
+def search_appointment(request):
+        time_choices = [stat for stat in TimeChoices.objects.all()]
+        return render (request = request, context={'choices': time_choices}, template_name = "search.html")
+
+@csrf_exempt
+def search_appointment_api(request):
+    
+        date = request.GET.get('date')
+        print("-----------------------")
+        time_slot = request.GET.get('time')
+        print(date)
+        print(time_slot) 
+        # if date is None:
+        # agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        # if len(agents) == 0:
+        #     return JsonResponse(None, safe = False)
+        # appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+            
+        # else:
+        #     agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        #     appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id), day = date, time = time_slot)
+
+        
+        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        if len(agents) == 0:
+            return JsonResponse(None, safe = False)
+        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+        customers = Customer.objects.all()
+        users = User.objects.all()
+
+        # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
+        # 'customer_first_name': str(appointment.customer.user.first_name),
+        #             'customer_last_name': str(appointment.customer.user.last_name),
+        json = simplejson.dumps(
+            [
+                {
+                    'id': str(appointment.id),
+                    'customer': str(appointment.customer.user.username),
+                    'email': str(appointment.customer.user.email),
+                    'mobile': str(appointment.customer.user.mobile),
+                    'day': str(appointment.day),
+                    'time': str(appointment.time.choice),
+                    'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'status': str(appointment.status.choice)
+                } for appointment in appointments
+            ]
+        )
+        # serialized = appointmentSerializer(appointments, many = True)
+        return JsonResponse(simplejson.loads(json), safe = False)
 
 @csrf_exempt
 def appointment_api(request):
