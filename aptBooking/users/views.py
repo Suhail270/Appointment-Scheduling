@@ -85,35 +85,23 @@ def delete_appointment_status(request):
 def appointments(request):
     return render (request = request, template_name = "appointments.html")
 
-def search_appointment(request):
-        time_choices = [stat for stat in TimeChoices.objects.all()]
-        return render (request = request, context={'choices': time_choices}, template_name = "search.html")
+# def search_appointment(request):
+#         time_choices = [stat for stat in TimeChoices.objects.all()]
+#         return render (request = request, context={'choices': time_choices}, template_name = "search.html")
 
 @csrf_exempt
 def search_appointment_api(request):
-    
-        date = request.GET.get('date')
-        print("-----------------------")
-        time_slot = request.GET.get('time')
-        print(date)
-        print(time_slot) 
-        # if date is None:
-        # agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
-        # if len(agents) == 0:
-        #     return JsonResponse(None, safe = False)
-        # appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
-            
-        # else:
-        #     agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
-        #     appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id), day = date, time = time_slot)
-
-        
         agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
-        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
-        customers = Customer.objects.all()
-        users = User.objects.all()
+        
+        #if date or time is Null, display all appointments
+        if (date is None):
+            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+
+        #if not, display appointments of given date and time    
+        else:
+            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id), day = date, time_id = time_slot)
 
         # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
         # 'customer_first_name': str(appointment.customer.user.first_name),
@@ -134,6 +122,20 @@ def search_appointment_api(request):
         )
         # serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(simplejson.loads(json), safe = False)
+
+
+@csrf_exempt
+def search_demo(request):
+    global date
+    global time_slot
+    date = request.POST.get('date')
+    print("-----------------------")
+    time_slot = request.POST.get('time')
+    print(date)
+    print(time_slot)
+
+    time_choices = [stat for stat in TimeChoices.objects.all()]
+    return render(request = request, context={'choices': time_choices}, template_name = "search_demo.html")
 
 @csrf_exempt
 def appointment_api(request):
