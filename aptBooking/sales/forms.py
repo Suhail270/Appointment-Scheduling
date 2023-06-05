@@ -15,10 +15,10 @@ from django.utils.safestring import mark_safe
 User = get_user_model()
 
 class customerform(forms.Form):
-    firstname = forms.CharField(max_length=100)
-    lastname = forms.CharField(max_length=100)
-    mobile = forms.CharField(max_length=30)
-    email = forms.EmailField()
+    first_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-fname'}))
+    last_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-lname'}))
+    mobile = forms.CharField(max_length=30, widget=forms.TextInput(attrs={'class': 'form-mobile'}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-email'}))
 
 class DateInput(forms.DateInput):
     input_type = 'date'

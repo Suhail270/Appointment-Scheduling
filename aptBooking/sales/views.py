@@ -28,7 +28,7 @@ def customer_reg(request):
             request.session['customer_id'] = customer.id
             return redirect("appointment_create.html")
     form = customerform()
-    return render(request,"customer.html",{'form': form})
+    return render(request,"custreg.html",{'form': form})
   
 class AppointmentCreateView(generic.CreateView):
     template_name = "sales/appointment_create.html"

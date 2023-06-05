@@ -1,13 +1,4 @@
-/* .pretty-box {
-    width: 100px;
-    height: 440px;
-    margin-top: 10%;
-    background-color: pink;
-    text-align: center;
-    
-} */
-
-.customerform {
+/* .customerform {
     width: 350px;
     height: 500px;
     position: relative;
@@ -31,4 +22,111 @@
 }
 
 
+ */
 
+ #bigbox {
+    width: 1000px;
+    height: 600px;
+    border: 1px black solid;
+    background-color: white;
+    border-radius: 25px;
+    margin: auto;
+    margin-top: 100px;
+  }
+  
+  #bigbox .box1 {
+    width: 400px;
+    height: 580px;
+    float: left;
+    background-color: rgb(66, 66, 247);
+    margin-top: 10px;
+    margin-left: 15px;
+    border-radius: 25px;
+  }
+
+  #bigbox .box2 {
+    width: 550px;
+    height: 580px;
+    float: left;
+    background-color: white;
+    margin-top: 10px;
+    margin-left: 10px;
+    border-radius: 25px;
+  }
+
+  .logotext {
+    color: white;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    margin-left: 10px;
+    margin-top: 20px;
+  }
+
+  /* .logo-image {
+    height: 50px;
+    position: relative;
+    float: left;
+    margin-left: 10px;
+    margin-right: 10px;
+  } */
+
+  .catchy-text {
+    color: white;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin-top: 150px;
+    font-size: 35px;
+    margin-left: 15px;
+  }
+
+  .more-text {
+    color: white;
+    margin-left: 15px;
+    margin-top: 40px;
+    font-size: larger;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  }
+
+  .custheader {
+    color: black;
+    margin-top: 30px;
+  }
+
+  .custbutton {
+    background-color: #4242f7;
+    color: white;
+    margin-top: 40px;
+    margin-left: 450px;
+    border: none;
+    border-radius: 5px;
+    width: 100px;
+    height: 30px;
+    opacity: 0.95;
+  }
+
+  a:link, a:visited {
+    color: white;
+    font-size: large;
+  }
+
+.form-fname {
+    width: 550px;
+    height: 30px;
+    margin-bottom: 30px;
+}
+
+.form-lname {
+    width: 550px;
+    height: 30px;
+    margin-bottom: 30px;
+}
+
+.form-mobile {
+    width: 550px;
+    height: 30px;
+    margin-bottom: 30px;
+}
+
+.form-email {
+    width: 550px;
+    height: 30px;
+    margin-bottom: 30px;
+}

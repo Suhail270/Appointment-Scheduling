@@ -10,23 +10,38 @@
 
 <body>
 
-<!--Register--> 
-<div class="customerform">
-    <!-- <div class="pretty-box">
-        <h5>Book your appointment with us today!</h5>
-    </div> -->
-    <div class="custheader">
-	    <h1>Customer Details</h1>
+<!--Register-->
+
+<div id="bigbox">
+   <div class="box1">
+        <!-- <div class="logo-image">
+            <img src="{% static 'images/logoAY.png' %}", class="logo-image">
+        </div> -->
+        <div class="logotext">
+            AL YOUSUF 
+        </div>
+        <div class="catchy-text">
+            <p> Book your appointment with us today!</p>
+        </div>
+        <div class="more-text">
+            <p>Our agents will contact you at your chosen date and time.</p>
+        </div>
+   </div> 
+   <div class="box2">
+    <div class="customerform">
+        <div class="custheader">
+            <h1>Customer Details</h1>
+        </div>
+        <div class="formdetails">
+            <form method="POST">
+                {% csrf_token %}
+                {{ form }}   
+                <!-- {{ form.as_p }}  -->
+        </div>                
+            <button class="custbutton" type="submit"><a href="/sales/appt", style="text-decoration: none;">Next</a></button>
+        </form>
     </div>
-    <div class="formdetails">
-	    <form method="POST">
-		    {% csrf_token %}
-		    {{ custform }}   
-    </div> 
-    <div class="custbutton">               
-		<button class="btn btn-primary" type="submit"><a href="/sales/appt">Next</a></button>
-    </div> 
-	</form>
+   </div>
 </div>
 
 </body>
