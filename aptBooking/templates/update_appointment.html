@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Appointment{% endblock %}
+
+{% block content %}
+  <h2>Here:</h2>
+  <form method="post">
+    
+    {{ form.as_p }} 
+    <label for="app_stat">Choose a new status</label>
+
+
+
+    <select name="app_stat" id="app_stat">
+      {% for choice in choices %}
+        <li>{{ link }}</li>
+        <option value={{ choice.id }}>{{ choice.choice }}</option>
+      {% endfor %}
+        {% comment %} <option value="Pending">Pending</option>
+        <option value="Completed">Completed</option>
+        <option value="Cancelled">Cancelled</option> {% endcomment %}
+    </select>
+
+    <label for="app_id">Choose an appointment</label>
+
+    <input type="number" name="app_id" id="app_id">
+
+    <button type="submit">Submit</button>
+  </form>
+{% endblock %}

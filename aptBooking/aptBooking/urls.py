@@ -19,12 +19,15 @@ from users import views as user_views
 from django.conf.urls import include
 from django.views.generic.base import TemplateView 
 from django.contrib.auth.views import LoginView
+from users import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # path('register/',user_views.register, name='register'),
+    path('register/',user_views.register, name='register'),
     path('users/', include('django.contrib.auth.urls')),
     path('users/',include('users.urls')),
-    path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),
-    #path('login/', LoginView.as_view(), name='login')
+    # path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),
+    path('', views.dashboard, name='home'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('appointment', views.appointment_api)
 ]
