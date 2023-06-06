@@ -1,12 +1,24 @@
- 
-
-<!--Register--> 
+<!-- Register -->
 <div class="container py-5">
-	<h1>Customer Details</h1>
-	<form method="POST">
-		{% csrf_token %}
-		{{ custform }}                    
-		<button class="btn btn-primary" type="submit"><a href="/sales/appt">Next</a></button>
-	</form>
-</div>
+    <h1>Customer Details</h1>
+    <form method="POST">
+        {% csrf_token %}
 
+        {% for field in form %}
+            {% if field.name == 'organization' %}
+                <div class="mb-4" style="display: none;">
+                    {{ field }}
+                </div>
+            {% else %}
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <button class="btn btn-primary" type="submit"><a href="/sales/appt">Next</a></button>
+    </form>
+</div>

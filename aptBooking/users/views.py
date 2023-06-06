@@ -34,7 +34,7 @@ def register(request, slug):
             user.organization = organization
             user.save()
             agent = Agent.objects.create(user = user, organization = organization)
-            login(request, user)
+            return login(request, user)
             messages.success(request, "Registration successful.")
         else:
             messages.error(request, "Unsuccessful registration. Invalid information.")

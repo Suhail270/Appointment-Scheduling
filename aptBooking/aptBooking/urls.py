@@ -46,7 +46,7 @@ urlpatterns = [
 
     
     #path('login/', LoginView.as_view(), name='login')
-    path('sales/customer_reg/appointment_create.html', AppointmentCreateView.as_view(), name='apt-create'),
+    path('sales/<slug:slug>/customer_reg/appointment_create.html', AppointmentCreateView.as_view(), name='apt-create'),
     path('appointments/update/<int:pk>/', AppointmentUpdateView.as_view(), name='apt-update'),
     path('appointments/cancel/<int:pk>/', AppointmentCancelView.as_view(), name='apt-cancel'),
     path("get_available_time_slots/", get_available_time_slots, name="get_available_time_slots"),
