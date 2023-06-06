@@ -18,6 +18,7 @@ import time
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
+import math
 
 def register(request):
     if request.method == "POST":
@@ -81,7 +82,13 @@ def dashboard(request):
         appointment.save()
     if True:
         stat_choices = [stat for stat in Status.objects.all()]
-        return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
+        number =( Appointment.objects.filter(agent = Agent.objects.get(user_id = request.user.id)).count())/2
+        number=math.ceil(number)
+        number = [i + 1 for i in range(number)]
+    if request.GET == {}:
+        return render(request=request, context={'choices': stat_choices,'number':number, 'thepage': 1}, template_name="dashboard.html")
+    else:
+        return render(request=request, context={'choices': stat_choices,'number':number, 'thepage': int(request.GET.getlist('page_id')[0])}, template_name="dashboard.html")
 
 def update_appointment_status_completed(request):
     if request.method == 'POST':
