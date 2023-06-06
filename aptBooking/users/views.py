@@ -171,6 +171,96 @@ def appointment_api(request):
 def appointments(request):
     return render (request = request, template_name = "appointments.html")
 
+
+def appointment_api_pending(request):
+    if request.method == 'GET':
+        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        if len(agents) == 0:
+            return JsonResponse(None, safe = False)
+        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Pending'))
+        customers = Customer.objects.all()
+        users = User.objects.all()
+
+        # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
+        # 'customer_first_name': str(appointment.customer.user.first_name),
+        #             'customer_last_name': str(appointment.customer.user.last_name),
+        json = simplejson.dumps(
+            [
+                {
+                    'id': str(appointment.id),
+                    'customer': str(appointment.customer.user.username),
+                    'email': str(appointment.customer.user.email),
+                    'mobile': str(appointment.customer.user.mobile),
+                    'day': str(appointment.day),
+                    'time': str(appointment.time.choice),
+                    'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'status': str(appointment.status.choice)
+                } for appointment in appointments
+            ]
+        )
+        # serialized = appointmentSerializer(appointments, many = True)
+        return JsonResponse(simplejson.loads(json), safe = False)
+
+def appointment_api_Completed(request):
+    if request.method == 'GET':
+        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        if len(agents) == 0:
+            return JsonResponse(None, safe = False)
+        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Completed'))
+        customers = Customer.objects.all()
+        users = User.objects.all()
+
+        # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
+        # 'customer_first_name': str(appointment.customer.user.first_name),
+        #             'customer_last_name': str(appointment.customer.user.last_name),
+        json = simplejson.dumps(
+            [
+                {
+                    'id': str(appointment.id),
+                    'customer': str(appointment.customer.user.username),
+                    'email': str(appointment.customer.user.email),
+                    'mobile': str(appointment.customer.user.mobile),
+                    'day': str(appointment.day),
+                    'time': str(appointment.time.choice),
+                    'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'status': str(appointment.status.choice)
+                } for appointment in appointments
+            ]
+        )
+        # serialized = appointmentSerializer(appointments, many = True)
+        return JsonResponse(simplejson.loads(json), safe = False)
+
+def appointment_api_Deleted(request):
+    if request.method == 'GET':
+        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        if len(agents) == 0:
+            return JsonResponse(None, safe = False)
+        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Cancelled'))
+        customers = Customer.objects.all()
+        users = User.objects.all()
+
+        # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
+        # 'customer_first_name': str(appointment.customer.user.first_name),
+        #             'customer_last_name': str(appointment.customer.user.last_name),
+        json = simplejson.dumps(
+            [
+                {
+                    'id': str(appointment.id),
+                    'customer': str(appointment.customer.user.username),
+                    'email': str(appointment.customer.user.email),
+                    'mobile': str(appointment.customer.user.mobile),
+                    'day': str(appointment.day),
+                    'time': str(appointment.time.choice),
+                    'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'status': str(appointment.status.choice)
+                } for appointment in appointments
+            ]
+        )
+        # serialized = appointmentSerializer(appointments, many = True)
+        return JsonResponse(simplejson.loads(json), safe = False)
+
+
+
 #fetching appointment based on APPOINTMENT ID
 def delete_appointment_status(request):
     if request.method == 'POST':
