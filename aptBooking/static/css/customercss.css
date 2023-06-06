@@ -21,32 +21,40 @@
     box-sizing: border-box;
 }
 
-
  */
 
+ /* body {
+  background-image: url(../images/bg6.jpg);
+  background-size: cover;
+} */
+
+body {
+  background-color: rgb(133, 131, 131);
+}
+
  #bigbox {
-    width: 1000px;
-    height: 600px;
+    width: 1600px;
+    height: 695px;
     border: 1px black solid;
     background-color: white;
     border-radius: 25px;
     margin: auto;
-    margin-top: 100px;
+    margin-top: 50px;
   }
   
   #bigbox .box1 {
-    width: 400px;
-    height: 580px;
+    width: 500px;
+    height: 675px;
     float: left;
-    background-color: rgb(66, 66, 247);
+    background-color: #4242f7;
     margin-top: 10px;
     margin-left: 15px;
     border-radius: 25px;
   }
 
   #bigbox .box2 {
-    width: 550px;
-    height: 580px;
+    width: 1050px;
+    height: 675px;
     float: left;
     background-color: white;
     margin-top: 10px;
@@ -87,46 +95,53 @@
 
   .custheader {
     color: black;
-    margin-top: 30px;
+    margin-top: 40px;
+    margin-left: 345px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: larger;
   }
 
   .custbutton {
     background-color: #4242f7;
     color: white;
     margin-top: 40px;
-    margin-left: 450px;
+    margin-left: 430px;
     border: none;
     border-radius: 5px;
-    width: 100px;
-    height: 30px;
+    width: 200px;
+    height: 50px;
     opacity: 0.95;
   }
 
   a:link, a:visited {
     color: white;
-    font-size: large;
+    font-size: 25px;
   }
 
-.form-fname {
+.form-fname, .form-lname, .form-mobile, .form-email {
     width: 550px;
     height: 30px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
+    margin-left: 250px;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+    border-radius: 5px;
+    border-color: black;
+    font-size: 17px;
 }
 
-.form-lname {
-    width: 550px;
-    height: 30px;
-    margin-bottom: 30px;
+.form-fname:focus, .form-lname:focus, .form-mobile:focus, .form-email:focus {
+  border-color: #4242f7;
 }
 
-.form-mobile {
-    width: 550px;
-    height: 30px;
-    margin-bottom: 30px;
+.fname, .lname, .num, .email {
+  margin-top: 30px;
+  margin-left: 250px;
+  font-size: larger;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-.form-email {
-    width: 550px;
-    height: 30px;
-    margin-bottom: 30px;
+.star {
+  color: red;
 }

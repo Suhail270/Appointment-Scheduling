@@ -35,10 +35,18 @@
         <div class="formdetails">
             <form method="POST">
                 {% csrf_token %}
-                {{ form }}   
+                <p class="fname"> First Name <span class="star">*</span></p> 
+                {{ form.first_name }}  
+                <p class="lname"> Last Name <span class="star">*</span></p>
+                {{ form.last_name }}  
+                <p class="num"> Mobile Number <span class="star">*</span></p> 
+                {{ form.mobile }}   
+                <p class="email"> Email <span class="star">*</span></p>
+                {{ form.email }}   
+
                 <!-- {{ form.as_p }}  -->
         </div>                
-            <button class="custbutton" type="submit"><a href="/sales/appt", style="text-decoration: none;">Next</a></button>
+            <button class="custbutton" type="submit"><a href="/sales/customer_reg/appointment_create.html", style="text-decoration: none;">Next</a></button>
         </form>
     </div>
    </div>
