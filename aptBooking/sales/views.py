@@ -15,6 +15,7 @@ from .models import (
     Status
 )
 
+
 def customer_reg(request):
     if (request.method == "POST"):
         form = customerform(request.POST)
@@ -31,12 +32,15 @@ def customer_reg(request):
     form = customerform()
     return render(request,"customer.html",{'form': form})
   
+class SuccessCreatedView(generic.TemplateView):
+    template_name = "sales/success_creation.html"
+
 class AppointmentCreateView(generic.CreateView):
     template_name = "sales/appointment_create.html"
     form_class = AppointmentForm
 
     def get_success_url(self):
-        return reverse_lazy('home')
+        return reverse_lazy('creation-success')
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -103,7 +107,7 @@ class AppointmentUpdateView(generic.UpdateView):
     form_class = AppointmentForm
 
     def get_success_url(self):
-        return reverse_lazy('home')
+        return reverse_lazy('creation-success')
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -127,9 +131,11 @@ class AppointmentUpdateView(generic.UpdateView):
         )
         return super(AppointmentUpdateView, self).form_valid(form)
 
+class SuccessCancelView(generic.TemplateView):
+    template_name = "sales/success_cancellation.html"
 
 class AppointmentCancelView(generic.TemplateView):
-    template_name = 'sales/appointment_cancel.html'
+    template_name = 'sales/success_cancellation.html'
     
     def get(self, request, *args, **kwargs):
 
