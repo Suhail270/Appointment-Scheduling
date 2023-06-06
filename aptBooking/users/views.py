@@ -162,6 +162,7 @@ def search_appointment_api(request):
                     'day': str(appointment.day),
                     'time': str(appointment.time.choice),
                     'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'agent': str(appointment.agent.user.first_name) + " " + str(appointment.agent.user.last_name),
                     'status': str(appointment.status.choice)
                 } for appointment in appointments
             ]
