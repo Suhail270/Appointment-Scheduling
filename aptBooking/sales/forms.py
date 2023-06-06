@@ -73,6 +73,11 @@ class AppointmentForm(forms.ModelForm):
         return day
 
     def __init__(self, *args, **kwargs):
+        organization = kwargs.pop('organization', None)
         super().__init__(*args, **kwargs)
-        # Customize other field attributes or widgets if needed
+        if organization:
+            # Filter the agents based on the organization
+            agents = Agent.objects.filter(organization=organization)
+            self.fields['agent'].queryset = agents
+
 

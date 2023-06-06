@@ -125,7 +125,7 @@ def search_appointment_api(request):
             
             #if date or time is Null, display all appointments
             if (date is None):
-                appointments = Appointment.objects.all().filter(organization = user.userprofile)
+                appointments = Appointment.objects.all().filter(organization = user.organization)
 
             #if not, display appointments of given date and time    
             else:

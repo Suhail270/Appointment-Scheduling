@@ -15,6 +15,7 @@ from .models import (
     Status,
     Organization
 )
+from functools import partial
 
 def customer_reg(request, slug):
     organization = Organization.objects.get(choice=slug)
@@ -67,10 +68,13 @@ class AppointmentCreateView(generic.CreateView):
     def get_success_url(self):
         return reverse_lazy('home')
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        user = self.request.user
-        return form
+    def get_form_class(self):
+        slug = self.kwargs.get('slug')
+        if slug:
+            organization = Organization.objects.get(choice=slug)
+            self.organization = organization
+            return partial(AppointmentForm, organization=organization)
+        return self.form_class
 
     def get_initial(self):
         initial = super().get_initial()
@@ -81,7 +85,7 @@ class AppointmentCreateView(generic.CreateView):
             customer = Customer.objects.get(id=customer_id)
             initial['customer'] = customer
 
-        # Retrieve the slug value from the URL
+                # Retrieve the slug value from the URL
         slug = self.kwargs.get('slug')
         if slug:
             organization = Organization.objects.get(choice=slug)
@@ -91,7 +95,6 @@ class AppointmentCreateView(generic.CreateView):
 
     def form_valid(self, form):
         appointment = form.save(commit=False)
-        # appointment.organization = "Motors"
         selected_day = form.cleaned_data.get("day")
         selected_agent = form.cleaned_data.get("agent").user.email
 
@@ -111,8 +114,7 @@ class AppointmentCreateView(generic.CreateView):
             customer = Customer.objects.get(id=customer_id)
             appointment.customer = customer
 
-        appointment.customer = customer
-
+        appointment.organization = self.organization
         appointment.save()
 
         update_url = reverse("apt-update", kwargs={"pk": appointment.pk})
@@ -131,7 +133,7 @@ class AppointmentCreateView(generic.CreateView):
         del self.request.session['customer_id']
 
         return super(AppointmentCreateView, self).form_valid(form)
-
+    
 class AppointmentUpdateView(generic.UpdateView):
     model = Appointment
     template_name = "sales/appointment_update.html"
