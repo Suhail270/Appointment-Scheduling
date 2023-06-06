@@ -5,22 +5,21 @@ from datetime import datetime
 
 # For all users including customers and agents
 
-class User(AbstractUser):
-    is_organizer = models.BooleanField(default=True)
-    is_agent = models.BooleanField(default=False)
-    mobile = models.CharField(max_length=30)
+
 
 # For organizations only (Motors, Real Estate, Fitness)
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.user.username
 
 class BookingManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset()
+    
+class Organization(models.Model):
+    choice = models.CharField(max_length=100)
+
+    objects = BookingManager()
+
+    def __str__(self):
+        return f"{self.choice}"
 
 class PreferredContact(models.Model):
     choice = models.CharField(max_length=100)
@@ -48,10 +47,16 @@ class Status(models.Model):
 
     def __str__(self):
         return f"{self.choice}"
+    
+class User(AbstractUser):
+    is_organizer = models.BooleanField(default=False)
+    is_agent = models.BooleanField(default=True)
+    mobile = models.CharField(max_length=30)
+    organization = models.ForeignKey(Organization, null=True, blank=True, on_delete=models.SET_NULL)
 
 class Agent(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
-    organization = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.SET_NULL)
+    organization = models.ForeignKey(Organization, null=False, blank=False, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.email
@@ -63,7 +68,7 @@ class Agent(models.Model):
 
 class Customer(models.Model):
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.SET_NULL)
-    organization = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.SET_NULL)
+    organization = models.ForeignKey(Organization, null=False, blank=False, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.email
@@ -88,7 +93,7 @@ class Appointment(models.Model):
     preferred_contact_method = models.ForeignKey("PreferredContact", null=False, blank=False, on_delete=models.CASCADE)
     status = models.ForeignKey("Status", null=False, blank=False, default=get_default_status, on_delete=models.CASCADE)
 
-    # organization = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.SET_NULL)
+    organization = models.ForeignKey(Organization, null=False, blank=False, on_delete=models.CASCADE)
 
     def __str__(self):
         return "Agent " + str(self.agent.user) + " - " + str(self.customer.user)
@@ -97,6 +102,7 @@ class Appointment(models.Model):
 class AgentCancelledAppointment(models.Model):
     appointment = models.ForeignKey("Appointment", null=True, blank=True, on_delete=models.SET_NULL)
     reason = models.CharField(max_length=100, null=False, blank=False)
+    organization = models.ForeignKey(Organization, null=False, blank=False, on_delete=models.CASCADE)
 
     def __str__(self):
         return "Agent " + str(self.appointment.agent) + " - " + str(self.appointment.customer)

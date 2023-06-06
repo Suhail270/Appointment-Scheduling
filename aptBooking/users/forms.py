@@ -1,17 +1,32 @@
 from django import forms
 from django.contrib.auth import get_user_model
-User = get_user_model()
 from django.contrib.auth.forms import UsernameField ,UserCreationForm
 from django.forms.widgets import DateInput
 # Create your forms here.
 from django.utils import timezone
 from sales.models import TimeChoices 
-class NewUserForm(UserCreationForm):
 
-	class Meta:
-		model = User
-		fields = ('username','email','mobile')
-		field_classes = {"username":UsernameField} 
+User = get_user_model()
+
+# class AgentModelForm(forms.ModelForm):
+#     class Meta:
+#         model = User
+#         fields = (
+#             'email',
+#             'username',
+#             'first_name',
+#             'last_name'
+#         )
+
+class NewUserForm(UserCreationForm):
+    # organization = forms.CharField(widgets=forms.HiddenInput())
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'mobile', 'organization')
+        field_classes = {"username": UsernameField}
+
+ 
 
 class RestrictedDateInput(DateInput):
     def get_context(self, name, value, attrs):

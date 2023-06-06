@@ -4,7 +4,7 @@ from .forms import NewUserForm ,DateForm
 from django.contrib.auth import login
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from sales.models import Appointment, Agent, User, Customer, Status, TimeChoices, PreferredContact,AgentCancelledAppointment
+from sales.models import Appointment, Agent, User, Customer, Status, TimeChoices, PreferredContact,AgentCancelledAppointment, Organization
 from sales.serializers import appointmentSerializer
 from django.http.response import JsonResponse
 from .tables import AppointmentTable
@@ -19,91 +19,127 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 
-def register(request):
+def register(request, slug):
+    # Retrieve the organization instance based on the slug or segment
+    try:
+        organization = Organization.objects.get(choice=slug) 
+
+    except Organization.DoesNotExist:
+        organization = Organization.objects.create(choice=slug)
+
     if request.method == "POST":
         form = NewUserForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.organization = organization
+            user.save()
+            agent = Agent.objects.create(user = user, organization = organization)
             login(request, user)
-            messages.success(request, "Registration successful." )
-            
-        messages.error(request, "Unsuccessful registration. Invalid information.")
-    form = NewUserForm()
-    return render (request=request, template_name="signup.html", context={"register_form":form})
+            messages.success(request, "Registration successful.")
+        else:
+            messages.error(request, "Unsuccessful registration. Invalid information.")
+    else:
+        form = NewUserForm(initial={'organization': organization})  # Set initial value for the hidden field
 
-def dateTime(request):
-    context={}
-    context['context']=DateForm()
-    return render(request=request, template_name="dashboard.html",context={"context":context})
+    return render(request=request, template_name="signup.html", context={"register_form": form})
+
+
+# def dateTime(request):
+#     context={}
+#     context['context']=DateForm()
+#     return render(request=request, template_name="dashboard.html",context={"context":context})
 
 # class AppointmentFilter(FilterSet):
 #     Class Meta:
 #         model = Appointment
 #         fields -
 #check victor
-class appointmentsListView(SingleTableView):
-    model = Appointment
-    table_class = AppointmentTable
-    template_name = 'appointments.html'
 
-    def get_queryset(self, *args, **kwargs):
-        qs = super(appointmentsListView, self).get_queryset(*args, **kwargs)
-        a_id_list = Agent.objects.all().filter(user_id = self.request.user.id)
-        a_id = int(a_id_list[0].id)
-        qs = qs.all().filter(agent_id = a_id)
-        return qs
+# class appointmentsListView(SingleTableView):
+#     model = Appointment
+#     table_class = AppointmentTable
+#     template_name = 'appointments.html'
 
-@csrf_exempt
-def update_appointment_status(request):
-    if request.method == 'POST':
-        print(request.POST)
-        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
-        appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
-        appointment.save()
-    stat_choices = [stat for stat in Status.objects.all()]
-    return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
+#     def get_queryset(self, *args, **kwargs):
+#         qs = super(appointmentsListView, self).get_queryset(*args, **kwargs)
+#         a_id_list = Agent.objects.all().filter(user_id = self.request.user.id)
+#         a_id = int(a_id_list[0].id)
+#         qs = qs.all().filter(agent_id = a_id)
+#         return qs
 
-@csrf_exempt
-def dashboard_dropdown(request):
-    if request.method == 'POST':
-        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
-        appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
-        appointment.save()
-    if True:
-        stat_choices = [stat for stat in Status.objects.all()]
-        return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
+# @csrf_exempt
+# def update_appointment_status(request):
+#     if request.method == 'POST':
+#         print(request.POST)
+#         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+#         appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
+#         appointment.save()
+#     stat_choices = [stat for stat in Status.objects.all()]
+#     return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
+
+# @csrf_exempt
+# def dashboard_dropdown(request):
+#     if request.method == 'POST':
+#         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+#         appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
+#         appointment.save()
+#     if True:
+#         stat_choices = [stat for stat in Status.objects.all()]
+#         return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
+
 @csrf_exempt
 def dashboard(request):
+    
     if request.method == 'POST':
-        print(request.POST)
         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
         appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
         appointment.save()
-    if True:
-        stat_choices = [stat for stat in Status.objects.all()]
-        return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
 
-def update_appointment_status_completed(request):
-    if request.method == 'POST':
-        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
-        appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
-        appointment.save()
     stat_choices = [stat for stat in Status.objects.all()]
-    return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
+    return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
+
+# def update_appointment_status_completed(request):
+#     if request.method == 'POST':
+#         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+#         appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
+#         appointment.save()
+#     stat_choices = [stat for stat in Status.objects.all()]
+#     return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
+
+
+# my part. currently displays for all orgs, should display only for my org.
+# scope is only agents, need to handle orgs.
 
 @csrf_exempt
 def search_appointment_api(request):
+       
+        user = request.user
+        print("USER PROFILE: ", user.userprofile)
+
         agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
         
-        #if date or time is Null, display all appointments
-        if (date is None):
-            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+        if user.is_organizer:
+            
+            #if date or time is Null, display all appointments
+            if (date is None):
+                appointments = Appointment.objects.all().filter(organization = user.userprofile)
 
-        #if not, display appointments of given date and time    
+            #if not, display appointments of given date and time    
+            else:
+                appointments = Appointment.objects.all().filter(day = date, time_id = time_slot)
+
         else:
-            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id), day = date, time_id = time_slot)
+
+            #if date or time is Null, display all appointments
+            if (date is None):
+                appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id), organization = user.userprofile)
+
+            #if not, display appointments of given date and time    
+            else:
+                appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id), day = date, time_id = time_slot)
 
         # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
         # 'customer_first_name': str(appointment.customer.user.first_name),
@@ -139,6 +175,7 @@ def search_demo(request):
     time_choices = [stat for stat in TimeChoices.objects.all()]
     return render(request = request, context={'choices': time_choices}, template_name = "search_demo.html")
 
+# my part, same as search_appointment api
 
 @csrf_exempt
 def appointment_api(request):
@@ -189,9 +226,10 @@ def appointment_api(request):
 
         return JsonResponse(appointments_data, safe=False)
     
-def appointments(request):
-    return render (request = request, template_name = "appointments.html")
+# def appointments(request):
+#     return render (request = request, template_name = "appointments.html")
 
+# my part
 
 def appointment_api_pending(request):
     if request.method == 'GET':
@@ -222,6 +260,8 @@ def appointment_api_pending(request):
         # serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(simplejson.loads(json), safe = False)
 
+# my part
+
 def appointment_api_Completed(request):
     if request.method == 'GET':
         agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
@@ -250,6 +290,8 @@ def appointment_api_Completed(request):
         )
         # serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(simplejson.loads(json), safe = False)
+
+#my part
 
 def appointment_api_Deleted(request):
     if request.method == 'GET':
@@ -281,6 +323,7 @@ def appointment_api_Deleted(request):
         return JsonResponse(simplejson.loads(json), safe = False)
 
 
+# currently shows form for email subject and body to agent, need to be autogenereated
 
 #fetching appointment based on APPOINTMENT ID
 def delete_appointment_status(request):

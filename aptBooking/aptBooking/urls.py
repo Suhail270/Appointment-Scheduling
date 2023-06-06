@@ -26,7 +26,7 @@ from users import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('register/',user_views.register, name='register'),
+    path('users/<slug:slug>/register/', user_views.register, name='register'),
     path('users/', include('django.contrib.auth.urls')),
     path('users/',include('users.urls')),
 
@@ -60,7 +60,7 @@ urlpatterns = [
     path('appointment_pending', views.appointment_api_pending),
     path('appointment_Completed', views.appointment_api_Completed),
     path('appointment_Deleted', views.appointment_api_Deleted),
-    path('search/', views.search_appointment_api, name = "search")
+    path('search/', views.search_appointment_api, name = "search"),
 
     path('appointment', views.appointment_api)
 
