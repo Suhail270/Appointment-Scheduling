@@ -114,14 +114,17 @@ def dashboard(request):
 def search_appointment_api(request):
        
         user = request.user
-        print("USER PROFILE: ", user.userprofile)
+        print("USER ORG: ", user.organization)
+        print("ORGANIZER: ", user.is_organizer)
 
-        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
-
-        if len(agents) == 0:
-            return JsonResponse(None, safe = False)
         
-        if user.is_organizer:
+        
+        if user.is_organizer is True:
+            
+            agents = Agent.objects.all().filter(organization = user.organization)
+
+            if len(agents) == 0:
+                return JsonResponse(None, safe = False)
             
             #if date or time is Null, display all appointments
             if (date is None):
@@ -129,13 +132,18 @@ def search_appointment_api(request):
 
             #if not, display appointments of given date and time    
             else:
-                appointments = Appointment.objects.all().filter(day = date, time_id = time_slot)
+                appointments = Appointment.objects.all().filter(day = date, time_id = time_slot, organization = user.organization)
 
         else:
+            
+            agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
 
+            if len(agents) == 0:
+                return JsonResponse(None, safe = False)
+        
             #if date or time is Null, display all appointments
             if (date is None):
-                appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id), organization = user.userprofile)
+                appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
 
             #if not, display appointments of given date and time    
             else:
