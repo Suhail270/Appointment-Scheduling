@@ -17,6 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 import time
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
+from django.forms.models import model_to_dict
+
 def register(request):
     if request.method == "POST":
         form = NewUserForm(request.POST)
@@ -38,7 +40,7 @@ def dateTime(request):
 #     Class Meta:
 #         model = Appointment
 #         fields -
-
+#check victor
 class appointmentsListView(SingleTableView):
     model = Appointment
     table_class = AppointmentTable
@@ -146,28 +148,48 @@ def appointment_api(request):
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
         appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+        paginator = Paginator(appointments, per_page=2)  
+        page_number = request.GET.get('page')  
         customers = Customer.objects.all()
         users = User.objects.all()
 
         # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
         # 'customer_first_name': str(appointment.customer.user.first_name),
         #             'customer_last_name': str(appointment.customer.user.last_name),
-        json = simplejson.dumps(
-            [
-                {
-                    'id': str(appointment.id),
-                    'customer': str(appointment.customer.user.username),
-                    'email': str(appointment.customer.user.email),
-                    'mobile': str(appointment.customer.user.mobile),
-                    'day': str(appointment.day),
-                    'time': str(appointment.time.choice),
-                    'preferred_contact_method': str(appointment.preferred_contact_method.choice),
-                    'status': str(appointment.status.choice)
-                } for appointment in appointments
-            ]
-        )
-        # serialized = appointmentSerializer(appointments, many = True)
-        return JsonResponse(simplejson.loads(json), safe = False)
+        # json = simplejson.dumps(
+        #     [
+        #         {
+        #             'id': str(appointment.id),
+        #             'customer': str(appointment.customer.user.username),
+        #             'email': str(appointment.customer.user.email),
+        #             'mobile': str(appointment.customer.user.mobile),
+        #             'day': str(appointment.day),
+        #             'time': str(appointment.time.choice),
+        #             'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+        #             'status': str(appointment.status.choice)
+        #         } for appointment in appointments
+        #     ]
+        # )
+        # # serialized = appointmentSerializer(appointments, many = True)
+        # return JsonResponse(simplejson.loads(json), safe = False)
+        try:
+            appointments_page = paginator.get_page(page_number)
+        except:
+            return JsonResponse({'error': 'Invalid page number'}, status=400)
+
+        appointments_data = []
+        for appointment in appointments_page:
+            appointment_dict = model_to_dict(appointment)
+            appointment_dict['customer'] = str(appointment.customer.user.username)
+            appointment_dict['email'] = str(appointment.customer.user.email)
+            appointment_dict['mobile'] = str(appointment.customer.user.mobile)
+            appointment_dict['time'] = str(appointment.time.choice)
+            appointment_dict['preferred_contact_method'] = str(appointment.preferred_contact_method.choice)
+            appointment_dict['status'] = str(appointment.status.choice)
+            appointments_data.append(appointment_dict)
+
+        return JsonResponse(appointments_data, safe=False)
+    
 def appointments(request):
     return render (request = request, template_name = "appointments.html")
 

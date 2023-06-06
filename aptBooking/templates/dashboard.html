@@ -23,6 +23,25 @@
         padding: 20px;
         text-align:center
       }
+      .pagination {
+        justify-content: center;
+        margin-top: 20px;
+      }
+      .pagination li {
+        display: inline-block;
+        margin: 0 5px;
+      }
+      .pagination a {
+        color: #333;
+        text-decoration: none;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .pagination a.active {
+        background-color: #007bff;
+        color: #fff;
+      }
       </style>
       
       <h3 class="h">
@@ -51,6 +70,11 @@
           <tbody>
           </tbody>
         </table>
+        <ul class="pagination">
+          {% for page_num in page_range %}
+            <li><a href="#" onclick="fetchAppointments('{{ page_num }}')">{{ page_num }}</a></li>
+          {% endfor %}
+        </ul>
       </div>
     </div>
     {% else %}
@@ -73,9 +97,13 @@
         console.log("---------------------------------------");
         //document.location.href=url;
         // console.log("let's get this party started");
-
     }
-      fetch('http://127.0.0.1:8000/appointment')
+    function fetchAppointments(page){
+      const paginationLinks = document.querySelectorAll('.pagination a');
+      paginationLinks.forEach(link => {
+          link.classList.remove('active');
+      });
+      fetch('http://127.0.0.1:8000/appointment?page=1')
         .then(res => {
           return res.json();
         })
@@ -100,7 +128,10 @@
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });
+          
         })
         .catch(error => console.log(error));
+    }
+    fetchAppointments(2);
     </script>
 {% endblock %}
