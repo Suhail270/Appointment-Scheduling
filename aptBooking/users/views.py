@@ -16,7 +16,7 @@ import simplejson
 from django.views.decorators.csrf import csrf_exempt
 import time
 from django.core.mail import send_mail
-
+from django.core.paginator import Paginator
 def register(request):
     if request.method == "POST":
         form = NewUserForm(request.POST)
