@@ -1,0 +1,10 @@
+<div class="container py-5">
+  <h1>appointmentr</h1>
+  <form  method="POST">
+      {% csrf_token %}
+      {{form}}
+      <button class="btn btn-primary" type="submit">submit</button>
+  </form>
+</div>
+
+<!-- <a href="/sales/success"></a> -->

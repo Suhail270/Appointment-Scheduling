@@ -8,8 +8,9 @@
       <style>
        .tbl-container {
         width: 1000px;
-        margin-top: 10px;
-        margin-left: 10px;
+        
+        margin-left: auto;
+        margin-right: auto;
       }
       .bdr {
         border-radius: 6px;
@@ -18,10 +19,34 @@
       .bt1 {
         margin-top: 10px;
       }
+      .h {
+        padding: 20px;
+        text-align:center
+      }
+      .pagination {
+        justify-content: center;
+        margin-top: 20px;
+      }
+      .pagination li {
+        display: inline-block;
+        margin: 0 5px;
+      }
+      .pagination a {
+        color: #333;
+        text-decoration: none;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .pagination a.active {
+        background-color: #007bff;
+        color: #fff;
+      }
       </style>
-      <h1>
-        Hi {{ user.username }} Welcome To your Appointments Dashboard
-      </h1> 
+      
+      <h3 class="h">
+        Hi {{ user.username }}, Welcome To Your Appointments Dashboard
+      </h3>
       <div class="container my-5">
       <div class="tbl-container bdr">
         <form method="post" id="hiddenForm">
@@ -29,11 +54,15 @@
           <input type="number" name="app_id" id="app_id" hidden>
           <input type="text" name="app_stat" id="app_stat" hidden>
         </form>
+        <form method="get" id="hiddenForm2">
+          <input type="number" name="page_id" id="page_id" hidden>
+          
+        </form>
         <table class="table table-striped  ">
           <thead class="thead-dark">
             <tr>
                 <th scope="col">Customer</th>
-                <th scope="col">appointment Day</th>
+                <th scope="col">Appointment Day</th>
                 <th scope="col">Email</th>
                 <th scope="col">Mobile</th>
                 <th scope="col">Time</th>
@@ -45,6 +74,11 @@
           <tbody>
           </tbody>
         </table>
+        <ul>
+          {% for page_num in number %}
+            <li><a href="#" onclick="SubmitForm({{ page_num }})">{{ page_num }}</a></li>
+          {% endfor %}
+        </ul>
       </div>
     </div>
     {% else %}
@@ -52,13 +86,32 @@
       <a href="{% url 'login' %}">login</a>
     {% endif %}
     <script>
+      function SubmitForm(page){
+        document.getElementById("page_id").value=page
+        document.getElementById("hiddenForm2").submit();
+      }
       function buttonSubmit(formId, appId, opt) {
         var oForm = document.getElementById(formId);
         document.getElementById("app_stat").value = opt;
         document.getElementById("app_id").value = appId;
         oForm.submit();
       }
-      fetch('http://127.0.0.1:8000/appointment')
+      function testJS(){
+        //rest of the code
+        var appId = document.getElementById("ap").value;
+        localStorage.setItem('appointment_id',appId);
+        console.log("---------------------------------------");
+        console.log(appId);
+        console.log("---------------------------------------");
+        //document.location.href=url;
+        // console.log("let's get this party started");
+    }
+    function fetchAppointments(page){
+      const paginationLinks = document.querySelectorAll('.pagination a');
+      paginationLinks.forEach(link => {
+          link.classList.remove('active');
+      });
+      fetch('http://127.0.0.1:8000/appointment?page='+page)
         .then(res => {
           return res.json();
         })
@@ -74,13 +127,19 @@
                             <td>${appointment.preferred_contact_method}</td>
                             <td>${appointment.status}</td>
                             <td>
-                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-primary">Appointment Complete</button>
-                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Cancelled')" type="button" class="btn btn-danger bt1" style="height:40px;width:185px" >Cancel Appointment </button>
+                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-success" style="height:40px;width:185px" >Appointment Complete</button>
+                              <a href="users/delete_appointment">
+                                <button id = "ap" value="${appointment.id}" onclick="testJS()" type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >
+                                  Cancel Appoitment </button>
+                              </a>
                             </td>
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });
+          
         })
         .catch(error => console.log(error));
+    }
+    fetchAppointments({{ thepage }});
     </script>
 {% endblock %}
