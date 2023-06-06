@@ -60,7 +60,7 @@ urlpatterns = [
     path('appointment_pending', views.appointment_api_pending),
     path('appointment_Completed', views.appointment_api_Completed),
     path('appointment_Deleted', views.appointment_api_Deleted),
-    path('search/', views.search_appointment_api, name = "search")
+    path('search/', views.search_appointment_api, name = "search"),
 
     path('appointment', views.appointment_api)
 
