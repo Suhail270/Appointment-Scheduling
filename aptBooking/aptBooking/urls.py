@@ -30,9 +30,15 @@ urlpatterns = [
     path('users/', include('django.contrib.auth.urls')),
     path('users/',include('users.urls')),
 
+    path('test_pending', TemplateView.as_view(template_name='demo_Pending.html')),
+    path('test_comp', TemplateView.as_view(template_name='demo_comp.html')),
+    path('test_del', TemplateView.as_view(template_name='demo_del.html')),
+
+
 
     path('sales/', include('django.contrib.auth.urls')),
     path('sales/',include('sales.urls')),
+
 
 
     path('', views.dashboard, name='home'),
@@ -49,6 +55,13 @@ urlpatterns = [
     # path('', TemplateView.as_view(template_name='dashboard.html'), name='home'),
     
     path('login/', LoginView.as_view(), name='login'),
+
+    path('appointment', views.appointment_api),
+    path('appointment_pending', views.appointment_api_pending),
+    path('appointment_Completed', views.appointment_api_Completed),
+    path('appointment_Deleted', views.appointment_api_Deleted),
+    path('search/', views.search_appointment_api, name = "search")
+
     path('appointment', views.appointment_api)
 
 ]
