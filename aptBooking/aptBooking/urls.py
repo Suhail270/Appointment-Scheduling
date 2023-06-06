@@ -33,5 +33,6 @@ urlpatterns = [
     path('analytics', views.dashboard_with_pivot, name='dahsboard_with_pivot'),
     path('analytics_data', views.appointment_api, name='pivot_data'),
     path('chart', views.chart_test, name='chart'),
-    path('chart_data', views.chart_weekly_appointments, name='chart_data')
+    path('chart_data', views.chart_weekly_appointments, name='chart_data'),
+    path('line_data', views.chart_appointment_times, name='line_data')
 ]

@@ -24,10 +24,14 @@
 <hr />
 <div class="row">
 	<div class="col-md-6" hidden>
-	<canvas id="myChartline"></canvas>
+		<canvas id="myChartline"></canvas>
+	</div>
+	<input type="number" value="7" id="noOfDays" name="noOfDays" onchange="getData()">
+	<div class="col-md-6">
+		<canvas id="myChartBar"></canvas>
 	</div>
 	<div class="col-md-6">
-	<canvas id="myChartBar"></canvas>
+		<canvas id="myPieChart"></canvas>
 	</div>
 </div>
 
@@ -35,20 +39,43 @@
 
 <script>
 	var endpoint = '/chart_data';
-
 	$.ajax({
 	method: "GET",
 	url: endpoint,
+	data: {
+		days: document.getElementById("noOfDays").value
+	},
 	success: function(data) {
 		drawLineGraph(data, 'myChartline');
 		drawBarGraph(data, 'myChartBar');
+		drawPieChart(data, 'myPieChart');
 		console.log("drawing");
 	},
 	error: function(error_data) {
 		console.log(error_data);
 	}
-	})
+	});
+	
+	// getData();
 
+	function getData() {
+		$.ajax({
+		method: "GET",
+		url: endpoint,
+		data: {
+			days: document.getElementById("noOfDays").value
+		},
+		success: function(data) {
+			drawLineGraph(data, 'myChartline');
+			drawBarGraph(data, 'myChartBar');
+			drawPieChart(data, 'myPieChart');
+			console.log("drawing");
+		},
+		error: function(error_data) {
+			console.log(error_data);
+		}
+		});
+	}
 
 	function drawLineGraph(data, id) {
 	var labels = data.labels;
@@ -121,6 +148,42 @@
 		}
 	});
 	}
+
+	function drawPieChart(data, id) {
+		var labels = data.labels;
+		var chartLabel = data.chartLabel;
+		var chartdata = data.chartdata;
+		var newData = [0, 0];
+		console.log(chartdata);
+		for (let i = 0; i < document.getElementById("noOfDays").value; i++) {
+			newData[0] = newData[0] + chartdata[i];
+		}
+		var chartLabel2 = data.chartLabel2;
+		var chartdata2 = data.chartdata2;
+		for (let i = 0; i < document.getElementById("noOfDays").value; i++) {
+			newData[1] = newData[1] + chartdata2[i];
+		}
+		console.log(newData);
+		var ctx = document.getElementById(id).getContext('2d');
+		var myChart = new Chart(ctx, {
+			type: 'doughnut',
+			data: {
+			labels: [
+				'Completed',
+				'Cancelled'
+			],
+			datasets: [{
+				label: chartLabel,
+				data: newData,
+				backgroundColor: [
+					'rgba(127, 127, 255, 1)',
+					'rgba(255, 127, 127, 1)'
+				]
+			}]
+			},
+			options: {}
+		});
+		}
 </script>
 </body>
 

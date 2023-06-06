@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <title>Dashboard with Flexmonster</title>
     <script src="https://cdn.flexmonster.com/flexmonster.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" hidden></script>
     <link rel="stylesheet" href="https://cdn.flexmonster.com/demo.css">
   </head>
   <body>
@@ -36,7 +36,7 @@
                 container: "#pivot-table-container",
                 componentFolder: "https://cdn.flexmonster.com/",
                 width: "100%",
-                height: 430,
+                height: 700,
                 toolbar: true,
                 report: {
                     dataSource: {
@@ -56,7 +56,7 @@
                                 "caption": "Mobile"
                             },
                             "day": {
-                                "type": "date",
+                                "type": "text",
                                 "caption": "Day"
                             },
                             "time": {
@@ -76,42 +76,29 @@
                     slice: {
                         rows: [
                             {
-                                uniqueName: "id"
+                                uniqueName: "day"
                             }
                         ],
                         columns: [
+                            {
+                                uniqueName: "status",
+                            },
                             {
                                 uniqueName: "[Measures]"
                             }
                         ],
                         measures: [
                                 {
-                                    uniqueName: "customer"
-                                },
-                                {
-                                    uniqueName: "email"
-                                },
-                                {
-                                    uniqueName: "mobile"
-                                },
-                                {
-                                    uniqueName: "day"
-                                },
-                                {
-                                    uniqueName: "time"
-                                },
-                                {
-                                    uniqueName: "preferred_contact_method"
-                                },
-                                {
                                     uniqueName: "status"
-                                }
-                        ]
+                                },
+                        ],
+                        expandAll: true
                     },
                     "options": {
+                        "expandAll": "true",
                         "showGrandTotals": "false",
                         "grid": {
-                            "type": "flat"
+                            // "type": "flat"
                         }
                     }
                 }
