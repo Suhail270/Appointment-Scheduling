@@ -132,31 +132,6 @@ class AppointmentCreateView(generic.CreateView):
 
         return super(AppointmentCreateView, self).form_valid(form)
 
-    
-def register(request, slug):
-    # Retrieve the organization instance based on the slug or segment
-    try:
-        organization = Organization.objects.get(choice=slug) 
-
-    except Organization.DoesNotExist:
-        organization = Organization.objects.create(choice=slug)
-
-    if request.method == "POST":
-        form = NewUserForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.organization = organization
-            user.save()
-            agent = Agent.objects.create(user = user, organization = organization)
-            return login(request, user)
-            messages.success(request, "Registration successful.")
-        else:
-            messages.error(request, "Unsuccessful registration. Invalid information.")
-    else:
-        form = NewUserForm(initial={'organization': organization})  # Set initial value for the hidden field
-
-    return render(request=request, template_name="signup.html", context={"register_form": form})
-
 class AppointmentUpdateView(generic.UpdateView):
     model = Appointment
     template_name = "sales/appointment_update.html"
