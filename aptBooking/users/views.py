@@ -88,11 +88,14 @@ def dashboard(request):
         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
         appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
         appointment.save()
-    if True:
-        stat_choices = [stat for stat in Status.objects.all()]
-        number =( Appointment.objects.filter(agent = Agent.objects.get(user_id = request.user.id)).count())/2
-        number=math.ceil(number)
-        number = [i + 1 for i in range(number)]
+    stat_choices = [stat for stat in Status.objects.all()]
+    if len(Agent.objects.filter(user_id = request.user.id)) == 0:
+        number = 0
+    else:
+        number = (Appointment.objects.filter(agent = Agent.objects.get(user_id = request.user.id)).count())/2
+    number = math.ceil(number)
+    number = [i + 1 for i in range(number)]
+    print(number)
     if request.GET == {}:
         return render(request=request, context={'choices': stat_choices,'number':number, 'thepage': 1}, template_name="dashboard.html")
     else:
