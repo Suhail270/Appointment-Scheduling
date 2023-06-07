@@ -6,7 +6,24 @@
     {%comment%} Checks if use is logged in  {%endcomment%}
     {% if user.is_authenticated %}
       <style>
-       .tbl-container {
+      .container {
+        display: flex;
+        justify-content: center;
+      }
+      .horizontal-list {
+        display: flex;
+        flex-direction: row;
+        list-style-type: none;
+        padding: 0;
+        text-align:center;
+      }
+
+      .horizontal-list li {
+        margin-left: 20px;
+        margin-right: 10px;
+        
+      }
+      .tbl-container {
         width: 1000px;
         
         margin-left: auto;
@@ -74,11 +91,16 @@
           <tbody>
           </tbody>
         </table>
-        <ul>
+        <div class="container">
+        <ul class="horizontal-list">
+          <!-- <p>&larr;</p> -->
+          <p>&laquo;</p>
           {% for page_num in number %}
-            <div><a href="#" onclick="SubmitForm({{ page_num }})">{{ page_num }}</a></div>
+            <li  ><a href="#" onclick="SubmitForm({{ page_num }})">{{ page_num }}</a></li >
           {% endfor %}
+          <p>&raquo;</p>
         </ul>
+      </div>
       </div>
     </div>
     {% else %}
