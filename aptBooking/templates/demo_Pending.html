@@ -44,6 +44,7 @@
                 <th scope="col">Mobile</th>
                 <th scope="col">Time</th>
                 <th scope="col">Preferred Contact</th>
+                <th scope="col">Agent</th>
                 <th scope="col">Status</th>
                 <th scope="col">Actions</th>
             </tr>
@@ -89,12 +90,13 @@
                             <td>${appointment.mobile}</td>
                             <td>${appointment.time}</td>
                             <td>${appointment.preferred_contact_method}</td>
+                            <td>${appointment.agent}</td>
                             <td>${appointment.status}</td>
                             <td>
                               <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-success" style="height:40px;width:185px" >Appointment Complete</button>
                               <a href="users/delete_appointment">
                                 <button id = "ap" value="${appointment.id}" onclick="testJS()" type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >
-                                  Cancel Appoitment </button>
+                                  Cancel Appointment </button>
                               </a>
                             </td>
                             </tr>`

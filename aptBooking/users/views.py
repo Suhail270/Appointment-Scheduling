@@ -4,7 +4,7 @@ from .forms import NewUserForm ,DateForm
 from django.contrib.auth import login
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from sales.models import Appointment, Agent, User, Customer, Status, TimeChoices, PreferredContact,AgentCancelledAppointment
+from sales.models import Appointment, Agent, User, Customer, Status, TimeChoices, PreferredContact,AgentCancelledAppointment, Organization
 from sales.serializers import appointmentSerializer
 from django.http.response import JsonResponse
 from .tables import AppointmentTable
@@ -24,39 +24,29 @@ from django.forms.models import model_to_dict
 import math
 
 
-def register(request):
+def register(request, slug):
+    # Retrieve the organization instance based on the slug or segment
+    try:
+        organization = Organization.objects.get(choice=slug) 
+
+    except Organization.DoesNotExist:
+        organization = Organization.objects.create(choice=slug)
+
     if request.method == "POST":
         form = NewUserForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Registration successful." )
-            
-        messages.error(request, "Unsuccessful registration. Invalid information.")
-    form = NewUserForm()
-    return render (request=request, template_name="signup.html", context={"register_form":form})
+            user = form.save(commit=False)
+            user.organization = organization
+            user.save()
+            agent = Agent.objects.create(user = user, organization = organization)
+            return login(request, user)
+            messages.success(request, "Registration successful.")
+        else:
+            messages.error(request, "Unsuccessful registration. Invalid information.")
+    else:
+        form = NewUserForm(initial={'organization': organization})  # Set initial value for the hidden field
 
-def dateTime(request):
-    context={}
-    context['context']=DateForm()
-    return render(request=request, template_name="dashboard.html",context={"context":context})
-
-# class AppointmentFilter(FilterSet):
-#     Class Meta:
-#         model = Appointment
-#         fields -
-#check victor
-class appointmentsListView(SingleTableView):
-    model = Appointment
-    table_class = AppointmentTable
-    template_name = 'appointments.html'
-
-    def get_queryset(self, *args, **kwargs):
-        qs = super(appointmentsListView, self).get_queryset(*args, **kwargs)
-        a_id_list = Agent.objects.all().filter(user_id = self.request.user.id)
-        a_id = int(a_id_list[0].id)
-        qs = qs.all().filter(agent_id = a_id)
-        return qs
+    return render(request=request, template_name="signup.html", context={"register_form": form})
 
 
 def update_appointment_status(request):
@@ -79,10 +69,9 @@ def dashboard_dropdown(request):
         number = Appointment.objects.filter(agent = Agent.objects.get(user_id = request.user.id)).count()
         return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
 
-
-
 @csrf_exempt
 def dashboard(request):
+    
     if request.method == 'POST':
         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
         appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
@@ -102,32 +91,33 @@ def dashboard(request):
 def dashboard_with_pivot(request):
     return render(request, 'dashboard_with_pivot.html', {})
 
-# def pivot_data(request):
-#     dataset = Order.objects.all()
-#     data = serializers.serialize('json', dataset)
-#     return JsonResponse(data, safe=False)
-
-def update_appointment_status_completed(request):
-    if request.method == 'POST':
-        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
-        appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
-        appointment.save()
-    stat_choices = [stat for stat in Status.objects.all()]
-    return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
-
 @csrf_exempt
 def search_appointment_api(request):
-        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
-        if len(agents) == 0:
-            return JsonResponse(None, safe = False)
-        
-        #if date or time is Null, display all appointments
-        if (date is None):
-            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+       
+        user = request.user
+                
+        if user.is_organizer is True:
+            
+            agents = Agent.objects.all().filter(organization = user.organization)
+            #if date or time is Null, display all appointments
+            if (date is None):
+                appointments = Appointment.objects.all().filter(organization = user.organization)
+            #if not, display appointments of given date and time    
+            else:
+                appointments = Appointment.objects.all().filter(day = date, time_id = time_slot, organization = user.organization)
 
-        #if not, display appointments of given date and time    
         else:
-            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id), day = date, time_id = time_slot)
+            
+            agents = Agent.objects.all().select_related().filter(user_id = user.id)
+            #if date or time is Null, display all appointments
+            if (date is None):
+                appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+            #if not, display appointments of given date and time    
+            else:
+                appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id), day = date, time_id = time_slot)
+        
+        if len(agents) == 0:
+                return JsonResponse(None, safe = False)
 
         # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
         # 'customer_first_name': str(appointment.customer.user.first_name),
@@ -142,6 +132,7 @@ def search_appointment_api(request):
                     'day': str(appointment.day),
                     'time': str(appointment.time.choice),
                     'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'agent': str(appointment.agent.user.first_name) + " " + str(appointment.agent.user.last_name),
                     'status': str(appointment.status.choice)
                 } for appointment in appointments
             ]
@@ -163,38 +154,29 @@ def search_demo(request):
     time_choices = [stat for stat in TimeChoices.objects.all()]
     return render(request = request, context={'choices': time_choices}, template_name = "search_demo.html")
 
-
 @csrf_exempt
 def appointment_api(request):
+    
+    user = request.user
+
     if request.method == 'GET':
-        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        
+        if user.is_organizer is True:
+            agents = Agent.objects.all().filter(organization = user.organization)
+            appointments = Appointment.objects.all().filter(organization = user.organization)
+             
+        else:
+            agents = Agent.objects.all().select_related().filter(user_id = user.id)
+            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
-        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+        
         paginator = Paginator(appointments, per_page=2)  
         page_number = request.GET.get('page')  
         customers = Customer.objects.all()
         users = User.objects.all()
-
-        # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
-        # 'customer_first_name': str(appointment.customer.user.first_name),
-        #             'customer_last_name': str(appointment.customer.user.last_name),
-        # json = simplejson.dumps(
-        #     [
-        #         {
-        #             'id': str(appointment.id),
-        #             'customer': str(appointment.customer.user.username),
-        #             'email': str(appointment.customer.user.email),
-        #             'mobile': str(appointment.customer.user.mobile),
-        #             'day': str(appointment.day),
-        #             'time': str(appointment.time.choice),
-        #             'preferred_contact_method': str(appointment.preferred_contact_method.choice),
-        #             'status': str(appointment.status.choice)
-        #         } for appointment in appointments
-        #     ]
-        # )
-        # # serialized = appointmentSerializer(appointments, many = True)
-        # return JsonResponse(simplejson.loads(json), safe = False)
+        
         try:
             appointments_page = paginator.get_page(page_number)
         except:
@@ -208,14 +190,12 @@ def appointment_api(request):
             appointment_dict['mobile'] = str(appointment.customer.user.mobile)
             appointment_dict['time'] = str(appointment.time.choice)
             appointment_dict['preferred_contact_method'] = str(appointment.preferred_contact_method.choice)
+            appointment_dict['agent'] = str(appointment.agent.user.first_name) + " " + str(appointment.agent.user.last_name)
             appointment_dict['status'] = str(appointment.status.choice)
             appointments_data.append(appointment_dict)
 
         return JsonResponse(appointments_data, safe=False)
     
-def appointments(request):
-    return render (request = request, template_name = "appointments.html")
-
 def demo_pending(request):
     if request.method == 'POST':
         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
@@ -226,17 +206,19 @@ def demo_pending(request):
 
 
 def appointment_api_pending(request):
-    if request.method == 'POST':
-        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
-        appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
-        appointment.save()
-    if True:
-        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+    user = request.user
+   
+    if request.method == 'GET':
+        
+        if user.is_organizer is True:
+            agents = Agent.objects.all().filter(organization = user.organization)
+            appointments = Appointment.objects.all().filter(organization = user.organization).filter(status = Status.objects.get(choice = 'Pending'))
+        else:
+            agents = Agent.objects.all().select_related().filter(user_id = user.id)
+            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Pending'))
+
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
-        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Pending'))
-        customers = Customer.objects.all()
-        users = User.objects.all()
 
         # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
         # 'customer_first_name': str(appointment.customer.user.first_name),
@@ -251,65 +233,13 @@ def appointment_api_pending(request):
                     'day': str(appointment.day),
                     'time': str(appointment.time.choice),
                     'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'agent': str(appointment.agent.user.first_name) + " " + str(appointment.agent.user.last_name),
                     'status': str(appointment.status.choice)
                 } for appointment in appointments
             ]
         )
         # serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(simplejson.loads(json), safe = False)
-
-# @csrf_exempt
-# def appointment_pivot_api(request):
-#     if request.method == 'GET':
-#         agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
-#         if len(agents) == 0:
-#             return JsonResponse(None, safe = False)
-#         appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
-#         customers = Customer.objects.all()
-#         users = User.objects.all()
-#         dates = []
-#         for i in range(30):
-#             date = datetime.date.today() - datetime.timedelta(days = i)
-#             dates.append(date)
-
-#         # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
-#         # 'customer_first_name': str(appointment.customer.user.first_name),
-#         #             'customer_last_name': str(appointment.customer.user.last_name),
-#         result = []
-#         for date in dates:
-#             date_appointments = appointments.filter(day = date)
-#             if len(date_appointments) == 0:
-#                 result.append(
-#                     {
-#                         'id': None,
-#                         'customer': None,
-#                         'email': None,
-#                         'mobile': None,
-#                         'day': date,
-#                         'time': None,
-#                         'preferred_contact_method': None,
-#                         'status': None
-#                     }
-#                 )
-#             for appointment in date_appointments:
-#                 result.append(appointment)
-#         json = simplejson.dumps(
-#             [
-#                 {
-#                     'id': str(appointment.id),
-#                     'customer': str(appointment.customer.user.username),
-#                     'email': str(appointment.customer.user.email),
-#                     'mobile': str(appointment.customer.user.mobile),
-#                     'day': str(appointment.day),
-#                     'time': str(appointment.time.choice),
-#                     'preferred_contact_method': str(appointment.preferred_contact_method.choice),
-#                     'status': str(appointment.status.choice)
-#                 } for appointment in appointments
-#             ]
-#         )
-        
-        # serialized = appointmentSerializer(appointments, many = True)
-        # return JsonResponse(simplejson.loads(json), safe = False)
 
 def chart_test(request):
     return render(request, "charts_new.html", {})
@@ -336,7 +266,6 @@ def chart_appointment_times(request):
     print(line_data)
     return JsonResponse(line_data, safe=False)
         
-
 def chart_weekly_appointments(request):
     no_of_days = int(request.GET.getlist('days')[0])
     dates = []
@@ -360,46 +289,21 @@ def chart_weekly_appointments(request):
         "chartdata2":cancelled[::-1],
     }
     return JsonResponse(bar_data, safe=False)
-    
-    
-
-
-def chart_data(request):
-    authentication_classes = []
-    permission_classes = []
-    labels = [
-        'January',
-        'February', 
-        'March', 
-        'April', 
-        'May', 
-        'June', 
-        'July'
-        ]
-    chartLabel = "my data"
-    chartdata = [0, 10, 5, 2, 20, 30, 45]
-    data ={
-                    "labels":labels,
-                    "chartLabel":chartLabel,
-                    "chartdata":chartdata,
-            }
-    print("@@@@@@@@@@@@")
-    print(data)
-    print("@@@@@@@@@@@@")
-    return JsonResponse(data, safe=False)
 
 def appointment_api_Completed(request):
+    user = request.user
     if request.method == 'GET':
-        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+
+        if user.is_organizer is True:
+            agents = Agent.objects.all().filter(organization = user.organization)
+            appointments = Appointment.objects.all().filter(organization = user.organization).filter(status = Status.objects.get(choice = 'Completed'))
+        else:
+            agents = Agent.objects.all().select_related().filter(user_id = user.id)
+            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Completed'))
+
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
-        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Completed'))
-        customers = Customer.objects.all()
-        users = User.objects.all()
 
-        # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
-        # 'customer_first_name': str(appointment.customer.user.first_name),
-        #             'customer_last_name': str(appointment.customer.user.last_name),
         json = simplejson.dumps(
             [
                 {
@@ -410,25 +314,27 @@ def appointment_api_Completed(request):
                     'day': str(appointment.day),
                     'time': str(appointment.time.choice),
                     'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'agent': str(appointment.agent.user.first_name) + " " + str(appointment.agent.user.last_name),
                     'status': str(appointment.status.choice)
                 } for appointment in appointments
             ]
         )
-        # serialized = appointmentSerializer(appointments, many = True)
+        
         return JsonResponse(simplejson.loads(json), safe = False)
 
 def appointment_api_Deleted(request):
+    user = request.user
     if request.method == 'GET':
-        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        if user.is_organizer is True:
+            agents = Agent.objects.all().filter(organization = user.organization)
+            appointments = Appointment.objects.all().filter(organization = user.organization).filter(status = Status.objects.get(choice = 'Cancelled'))
+        else:
+            agents = Agent.objects.all().select_related().filter(user_id = user.id)
+            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Cancelled'))
+
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
-        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Cancelled'))
-        customers = Customer.objects.all()
-        users = User.objects.all()
 
-        # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
-        # 'customer_first_name': str(appointment.customer.user.first_name),
-        #             'customer_last_name': str(appointment.customer.user.last_name),
         json = simplejson.dumps(
             [
                 {
@@ -439,41 +345,62 @@ def appointment_api_Deleted(request):
                     'day': str(appointment.day),
                     'time': str(appointment.time.choice),
                     'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'agent': str(appointment.agent.user.first_name) + " " + str(appointment.agent.user.last_name),
                     'status': str(appointment.status.choice)
                 } for appointment in appointments
             ]
         )
-        # serialized = appointmentSerializer(appointments, many = True)
+
         return JsonResponse(simplejson.loads(json), safe = False)
 
 
-
-#fetching appointment based on APPOINTMENT ID
 def delete_appointment_status(request):
+    
+    user = request.user
+
     if request.method == 'POST':
         
         appointment_id = Appointment.objects.get(pk = int(request.POST.get('app_id')))
         reason_for_cancellation = request.POST.get('reason_for_cancel')
         status_id = Status.objects.filter(choice='Cancelled').values('id')[0]['id']  
         
-        print("---- appointment_id ---- ")
-        print(request.POST.get('app_id') == "")
-
         #updating status of appointment to cancelled
         appointment_id.status = Status.objects.get(pk = status_id)
         appointment_id.save()
 
+        if user.is_organizer:
+            organization = user.organization
+        
+        else:
+            agent = Agent.objects.all().select_related().filter(user_id = user.id)
+            organization = agent.organization
+
         #adding appointment to cancelled appointments table
-        new_record = AgentCancelledAppointment(appointment= appointment_id, reason= reason_for_cancellation)
+        
+        # organization = Organization.objects.get(choice=slug) 
+        new_record = AgentCancelledAppointment(appointment = appointment_id, reason = reason_for_cancellation, organization = organization)
         new_record.save()
 
         #sending an email
-        subject = request.POST.get('subject')
-        message = request.POST.get('message')
+        
+        customer = str(Appointment.objects.get(pk = int(request.POST.get('app_id'))).customer.user.first_name)
+        agent = Appointment.objects.get(pk = int(request.POST.get('app_id'))).agent
+
+        subject = "Appointment Cancellation"
+        message = '''Dear ''' + customer + ''',
+        
+We are sorry to inform you that your appointment with agent ''' + str(agent.user.first_name) + " " + str(agent.user.last_name) + " on " + str(appointment_id.day) + " at " + str(appointment_id.time.choice) + ''' has been cancelled.
+        
+Please book another appointment with us via our portal or contact our customer support for more information. We apologize for any inconvenience caused and are contantly working to improve our customer experience.
+        
+We hope to you see you soon!'''
+
         email_from = appointment_id.agent.user.email
-        recipient_list = [appointment_id.customer.user.email, ]
+        recipient_list = [appointment_id.customer.user.email,]
         send_mail(subject, message, email_from, recipient_list)
 
+        return redirect('home') 
+    
     return render(request=request, template_name="delete_appointment.html")
 
 

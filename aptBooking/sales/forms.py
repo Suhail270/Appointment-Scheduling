@@ -3,7 +3,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from .models import Appointment, TimeChoices, User, Agent, PreferredContact
+from .models import Appointment, TimeChoices, User, Agent, PreferredContact, Organization
 import datetime
 
 from django.forms.widgets import DateInput
@@ -12,17 +12,17 @@ from django.utils.safestring import mark_safe
 
 User = get_user_model()
 
+
 class customerform(forms.Form):
     firstname = forms.CharField(max_length=100)
     lastname = forms.CharField(max_length=100)
     mobile = forms.CharField(max_length=30)
     email = forms.EmailField()
+    organization = forms.ModelChoiceField(queryset=Organization.objects.all())
+
 
 class DateInput(forms.DateInput):
     input_type = 'date'
-
-from django.forms.widgets import DateInput
-from django.utils import timezone
 
 class RestrictedDateInput(DateInput):
     def get_context(self, name, value, attrs):
@@ -54,7 +54,8 @@ class AppointmentForm(forms.ModelForm):
             'day',
             'time',
             'preferred_contact_method',
-            'status'
+            'status',
+            'organization'
         )
 
     def clean_day(self):
@@ -72,6 +73,11 @@ class AppointmentForm(forms.ModelForm):
         return day
 
     def __init__(self, *args, **kwargs):
+        organization = kwargs.pop('organization', None)
         super().__init__(*args, **kwargs)
-        # Customize other field attributes or widgets if needed
+        if organization:
+            # Filter the agents based on the organization
+            agents = Agent.objects.filter(organization=organization)
+            self.fields['agent'].queryset = agents
+
 

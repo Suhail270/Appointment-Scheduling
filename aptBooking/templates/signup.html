@@ -6,7 +6,22 @@
     <h2>Sign up</h2>
     <form method="post">
       {% csrf_token %}
-      {{ register_form }}
+      
+      {% for field in register_form %}
+        {% if field.name == 'organization' %}
+          <div class="mb-4" style="display: none;">
+              {{ field }}
+          </div>
+        {% else %}
+          <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+                {{ field.label }}
+              </label>
+              {{ field }}
+          </div>
+        {% endif %}
+      {% endfor %}
+
       <button type="submit">Sign up</button>
     </form>
 {% endblock %}

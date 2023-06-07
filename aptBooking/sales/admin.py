@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (User, 
-                     UserProfile, 
+                     Organization, 
                      PreferredContact, 
                      Agent, 
                      Customer,
@@ -10,7 +10,7 @@ from .models import (User,
                      AgentCancelledAppointment)
 
 admin.site.register(User)
-admin.site.register(UserProfile)
+admin.site.register(Organization)
 admin.site.register(PreferredContact)
 admin.site.register(TimeChoices)
 admin.site.register(Agent)
