@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/appt.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+
+
+<!--Appointment Section-->
+<body>
+  <section class="container">
+    <header>Registration Form</header>
+    <form class="form">
+      {% csrf_token %}
+
+      {% for field in form %}
+        {% if field.name == 'customer' %}
+    
+          <div class="select-box">
+            <label for="{{ field.id_for_label }}">
+              {{ field.label }}
+            </label>
+              {{ field }}
+          </div>
+
+        {% endif %}
+
+                          
+        {% if field.name != 'customer' and field.name != 'status' or field.name == 'agent' or field.name == 'time'  %}
+          {% if field.name == 'day' %}
+
+            <div class="input-box">
+              
+                <label for="{{ field.id_for_label }}">
+                  {{ field.label }}
+                </label>
+                  {{ field }}
+              
+
+              <script>
+                $(document).ready(function() {
+                  $("#{{ field.id_for_label }}").datepicker({
+                    minDate: 0,
+                    maxDate: "+30d",
+                    dateFormat: "yy-mm-dd",
+                    changeMonth: true,
+                    changeYear: true
+                  });
+                });
+              </script>
+            </div>
+
+            {% else %}
+            <div class="select-box">
+              <label for="{{ field.id_for_label }}">
+                {{ field.label }}
+              </label>
+                {{ field }}
+            </div>
+          {% endif %}
+
+        {% endif %}
+
+      {% endfor %}
+
+      <!-- <div class="input-box">
+        <label>Full Name</label>
+        <input type="text" placeholder="Please enter full name">
+      </div>
+
+      <div class="column">
+        <div class="input-box">
+          <label>Full Name</label>
+          <input type="text" placeholder="Please enter full name">
+        </div>
+        <div class="input-box">
+          <label>Full Name</label>
+          <input type="text" placeholder="Please enter full name">
+        </div>
+      </div>
+
+      <div class="input-box address">
+        <label>Address</label>
+        <input type="text" placeholder="Please enter full name">
+        <div class="column">
+          <div class="select-box">
+            <select>
+              <option>A</option>
+              <option>B</option>
+              <option>C</option>
+            </select>
+          </div>
+        </div>
+      </div> -->
+
+      <button>Submit</button>
+    </form>
+  </section>
+
+</body>
+
+{% endblock content %}

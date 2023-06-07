@@ -1,366 +1,105 @@
-/* @import url('https://fonts.googleapis.com/css?family=Fjalla+One&display=swap');
-
-
-:root {
-  --bg: url("https://images.unsplash.com/photo-1506606401543-2e73709cebb4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80");
-  --form-bg: #ffffff;
-  --form-shadow: #2137ff;
-  --form-primary-highlight: #676cff;
-  --form-secondary-highlight: #2137ff;
-  --font-size: 14pt;
-  --font-face: 'Fjalla One';
-  --font-color: #2A293E;
-}
-
-
-* {
-  margin: 0;
-  padding: 0;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+*{
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
 body {
-  background: var(--bg) center center no-repeat;
-  background-size: cover;
-  width: 100vw;
-  height: 100vh;
-  display: grid;
+  min-height: 100vh;
+  display: flex;
   align-items: center;
-  justify-items: center;
+  justify-content: center;
+  background: rgb(168, 201, 240);
 }
 
-.contact-us {
-  background: var(--form-bg);
-  padding: 50px 100px;
-  border: 2px solid rgba(0, 0, 0, 1);
-  box-shadow: 15px 15px 1px var(--form-shadow), 15px 15px 1px 2px rgba(0, 0, 0, 1);
-}
-
-input {
-  display: block;
+.container{
+  position: relative;
+  max-width: 700px;
   width: 100%;
-  font-size: var(--font-size);
-  line-height: calc(var(--font-size) * 2);
-  font-family: var(--font-face);
-  margin-bottom: calc(var(--font-size) * 2);
-  border: none;
-  border-bottom: 5px solid rgba(0, 0, 0, 1);
-  background: var(--form-bg);
-  min-width: 250px;
-  padding-left: 5px;
-  outline: none;
-  color: rgba(0, 0, 0, 1);
-}
-
-input:focus {
-  border-bottom: 5px solid var(--form-shadow);
-}
-
-button {
-  color: #ffffff;
-  display: block;
-  margin: 0 auto;
-  line-height: calc(var(--font-size) * 2);
-  padding: 0 20px;
-  background: var(--form-shadow);
-  letter-spacing: 2px;
-  transition: .2s all ease-in-out;
-  outline: none;
-  border: 1px solid rgb(255, 255, 255);
-  box-shadow: 3px 3px 1px 1px var(--form-primary-highlight), 3px 3px 1px 2px rgba(0, 0, 0, 1);
-}
-  
-
-button:hover {
-  background: rgba(0, 0, 0, 1);
-  color: white;
-  border: 1px solid rgba(0, 0, 0, 1);
-}
-
-::selection {
-  background: var(--form-secondary-highlight);
-}
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
-  border-bottom: 5px solid var(--form-primary-highlight);
-  -webkit-text-fill-color: var(--font-color);
-  -webkit-box-shadow: 0 0 0px 1000px var(--form-bg) inset;
-  transition: background-color 5000s ease-in-out 0s;
-}
-
-
-.ui-datepicker {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
-    
-  }
-
-  .ui-datepicker-header {
-    background-color: #3b4bfa;
-    color: #f8f4e5;
-  
-  }
-
-  .ui-datepicker-calendar {
-    color: #000;
-    
-  }
-
-  .ui-datepicker td span, .ui-datepicker td a {
-    color: #000;
-    
-  }
-
-  .ui-datepicker-calendar .ui-state-active {
-    background-color: #f4f4f4;
-    
-  }
-
-  label {
-      font-family: Georgia, serif; 
-      font-size: 20px;
-  }
-
-  select {
-    width: 200px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
-    font-size: 16px;
-    background-color: #ffffff;
-    color: #333;
-  }
-
-  select:hover,
-  select:focus {
-    border-color: #888;
-    background-color: #fff5a6;
-  } */
-
-li,
-ul {
-  list-style: none;
-  padding: 10px;
-  margin: 10px;
-}
-
-.sec-title {
-  position: relative;
-  padding-bottom: 40px;
-}
-
-.sec-title .title {
-  position: relative;
-  color: #00b8ca;
-  font-size: 18px;
-  font-weight: 700;
-  padding-right: 50px;
-  margin-bottom: 15px;
-  display: inline-block;
-  text-transform: capitalize;
-}
-
-.sec-title .title:before {
-  position: absolute;
-  content: '';
-  right: 0;
-  bottom: 7px;
-  width: 40px;
-  height: 1px;
-  background-color: #bbb;
-}
-
-.sec-title h2 {
-  position: relative;
-  color: #252525;
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 1.5em;
-  display: block;
-}
-
-.sec-title.light h2 {
-  color: #fff;
-}
-
-.appointment-section {
-  position: relative;
-  padding: 110px 0 80px;
-}
-
-.appointment-section .form-column {
-  position: relative;
-  margin-bottom: 40px;
-}
-
-.default-form {
-  position: relative;
-}
-
-.default-form .form-group {
-  position: relative;
-  margin-bottom: 20px;
-}
-
-.default-form .form-group i {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  color: #00b8ca;
-  font-size: 18px;
-}
-
-.default-form .form-group input[type=text],
-.default-form .form-group input[type=tel],
-.default-form .form-group input[type=email],
-.default-form .form-group select {
-  position: relative;
-  display: block;
-  width: 100%;
-  line-height: 28px;
-  padding: 10px 20px;
-  color: #000;
-  height: 50px;
-  font-size: 13px;
   background: #fff;
-  border: 1px solid #d7d7d7;
-  -webkit-transition: all 0.3s ease;
-  -ms-transition: all 0.3s ease;
-  -o-transition: all 0.3s ease;
-  -moz-transition: all 0.3s ease;
-  transition: all 0.3s ease;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
-.default-form .form-group input[type=text]:focus,
-.default-form .form-group input[type=tel]:focus,
-.default-form .form-group input[type=email]:focus,
-.default-form .form-group textarea:focus {
-  border-color: #00b8ca;
-}
-
-.default-form .form-group textarea {
-  position: relative;
-  display: block;
-  width: 100%;
-  line-height: 22px;
-  padding: 15px 20px;
-  color: #797979;
-  height: 120px;
-  background: #fff;
-  resize: none;
-  font-size: 14px;
-  border: 1px solid #d7d7d7;
-  -webkit-transition: all 0.3s ease;
-  -ms-transition: all 0.3s ease;
-  -o-transition: all 0.3s ease;
-  -moz-transition: all 0.3s ease;
-  transition: all 0.3s ease;
-}
-
-.default-form .form-group .appointment-btn {
-  position: relative;
-  text-align: center;
-  font-size: 15px;
-  font-weight: 700;
-  padding: 11px 30px;
-  margin-top: 10px;
-  display: inline-block;
-  background-color: #00b8ca;
-  border: 1px solid #00b8ca;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.default-form .form-group .btn-detail {
-  position: relative;
-  color: #777;
-  font-size: 15px;
-  margin-left: 35px;
-  display: inline-block;
-}
-
-.appointment-section .schedule-column {
-  position: relative;
-}
-
-.appointment-section .schedule-column .inner-outer {
-  position: relative;
-  padding-left: 20px;
-  padding-bottom: 20px;
-}
-
-.appointment-section .schedule-column .inner-outer:before {
-  position: absolute;
-  content: '';
-  left: 0;
-  bottom: 0;
-  width: 347px;
-  height: 268px;
-  background: url(https://i.ibb.co/gjZ1NFM/pattern-Appoinment.png) no-repeat;
-}
-
-.appointment-section .schedule-column .inner-column {
-  position: relative;
-  padding: 25px 30px;
-  border: 2px solid #00b8ca;
-  background-color: #fff;
-}
-
-.appointment-section .schedule-column h2 {
-  position: relative;
-  color: #252525;
-  font-size: 24px;
+.container header{
+  font-size: 1.5rem;
+  color: #333;
   font-weight: 600;
-  line-height: 1.4em;
-  margin-bottom: 15px;
+  text-align: center;
 }
 
-.appointment-section .schedule-column .time-list {
-  position: relative;
+.container .form{
+  margin-top: 30px;
 }
 
-.appointment-section .schedule-column .time-list li {
-  position: relative;
-  color: #777;
-  font-size: 15px;
-  margin-bottom: 12px;
-}
-
-.appointment-section .schedule-column .time-list li:last-child {
-  margin-bottom: 0;
-}
-
-.appointment-section .schedule-column .time-list li strong {
-  color: #222;
-  font-weight: 700;
-}
-
-.appointment-section .schedule-column .time-list .closed {
-  position: relative;
-  color: #00b8ca;
-}
-
-.column {
-    float: left;
-    width: 50%;
-    padding: 10px;
-    box-sizing: border-box;
-  }
+.form .input-box, .form .select-box{
+  width: 100%;
+  margin-top: 30px;
   
-  .row:after {
-    content: "";
-    display: table;
-    clear: both;
-  }
+}
+
+.input-box label, .select-box label{
+  color: #333;
+}
+
+.form :where(.input-box input, .select-box select){
+  position: relative;
+  height: 50px;
+  width: 100%;
+  outline: none;
+  font-size: 1rem;
+  color: #707070;
+  margin-top: 8px;
+  border-radius: 6px;
+  padding: 0 15px;
+
+}
+
+.form .column{
+  display: flex;
+  column-gap: 15px;  
+}
+
+.select-box select{
+  height: 100%;
+  width: 100%;
+  outline: none;
+  border: none;
+  color: #707070;
+  font-size: 1rem;
+}
+
+.address :where(input, .select-box){
+  margin-top: 20px;
+}
+
+.form button{
+  height: 55px;
+  width: 100%;
+  color: #fff;  
+  font-size: 1rem;
+  border: none;
+  margin-top: 30px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 400;
+  transition: all 0.2s ease;
+  background-color: rgb(78, 151, 240);
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
   
-  @media screen and (max-width: 600px) {
-    .column {
-      width: 100%;
-    }
+}
+
+.form button:hover{
+  background-color: rgb(44, 85, 234);
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+/* Responsive */
+@media screen and (max-width: 500px){
+  .form .column{
+    flex-wrap: wrap;
   }
-
-
-
+}
