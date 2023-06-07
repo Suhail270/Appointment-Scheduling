@@ -360,14 +360,17 @@ def delete_appointment_status(request):
         appointment_id.status = Status.objects.get(pk = status_id)
         appointment_id.save()
 
-        agent = Agent.objects.all().filter(email = user.email)
+        if user.is_organizer:
+            organization = user.organization
         
-        print("AGENT: ", agent)
+        else:
+            agent = Agent.objects.all().select_related().filter(user_id = user.id)
+            organization = agent.organization
 
         #adding appointment to cancelled appointments table
         
         # organization = Organization.objects.get(choice=slug) 
-        new_record = AgentCancelledAppointment(appointment= appointment_id, reason= reason_for_cancellation)
+        new_record = AgentCancelledAppointment(appointment= appointment_id, reason= reason_for_cancellation, organization = organization)
         new_record.save()
 
         #sending an email
