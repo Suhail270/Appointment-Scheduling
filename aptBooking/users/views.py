@@ -350,14 +350,9 @@ def delete_appointment_status(request):
     if request.method == 'POST':
         
         appointment_id = Appointment.objects.get(pk = int(request.POST.get('app_id')))
-        print("APPOINTMENT: ", appointment_id)
         reason_for_cancellation = request.POST.get('reason_for_cancel')
         status_id = Status.objects.filter(choice='Cancelled').values('id')[0]['id']  
         
-        print("---- appointment_id ---- ")
-        print(request.POST.get('app_id'))
-        print("APPOINTMENT: ", appointment_id)
-
         #updating status of appointment to cancelled
         appointment_id.status = Status.objects.get(pk = status_id)
         appointment_id.save()

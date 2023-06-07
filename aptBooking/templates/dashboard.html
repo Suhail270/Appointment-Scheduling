@@ -3,12 +3,11 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    {%comment%} Checks if user is logged in  {%endcomment%}
-    {% if user.is_authenticated %}
-      <style>
-       .tbl-container {
+  {% comment %} Checks if user is logged in {% endcomment %}
+  {% if user.is_authenticated %}
+    <style>
+      .tbl-container {
         width: 1000px;
-        
         margin-left: auto;
         margin-right: auto;
       }
@@ -21,7 +20,7 @@
       }
       .h {
         padding: 20px;
-        text-align:center
+        text-align: center;
       }
       .pagination {
         justify-content: center;
@@ -42,30 +41,30 @@
         background-color: #007bff;
         color: #fff;
       }
-      </style>
-      
-      <h3 class="h">
-        Hi {{ user.username }}, Welcome To Your Appointments Dashboard
-      </h3> 
-      <div class="container my-5">
+    </style>
+
+    <h3 class="h">
+      Hi {{ user.username }}, Welcome To Your Appointments Dashboard
+    </h3> 
+    <div class="container my-5">
       <div class="tbl-container bdr">
         <form method="post" id="hiddenForm">
           {% csrf_token %}
           <input type="number" name="app_id" id="app_id" hidden>
           <input type="text" name="app_stat" id="app_stat" hidden>
         </form>
-        <table class="table table-striped  ">
+        <table class="table table-striped">
           <thead class="thead-dark">
             <tr>
-                <th scope="col">Customer</th>
-                <th scope="col">Appointment Day</th>
-                <th scope="col">Email</th>
-                <th scope="col">Mobile</th>
-                <th scope="col">Time</th>
-                <th scope="col">Preferred Contact</th>
-                <th scope="col">Agent</th>
-                <th scope="col">Status</th>
-                <th scope="col">Actions</th>
+              <th scope="col">Customer</th>
+              <th scope="col">Appointment Day</th>
+              <th scope="col">Email</th>
+              <th scope="col">Mobile</th>
+              <th scope="col">Time</th>
+              <th scope="col">Preferred Contact</th>
+              <th scope="col">Agent</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -78,10 +77,7 @@
         </ul>
       </div>
     </div>
-    {% else %}
-      <p>You are not logged in</p>
-      <a href="{% url 'login' %}">login</a>
-    {% endif %}
+
     <script>
       function buttonSubmit(formId, appId, opt) {
         var oForm = document.getElementById(formId);
@@ -89,51 +85,57 @@
         document.getElementById("app_id").value = appId;
         oForm.submit(); 
       }
-      function testJS(){
-        //rest of the code
+      function testJS() {
         var appId = document.getElementById("ap").value;
-        localStorage.setItem('appointment_id',appId);
+        localStorage.setItem('appointment_id', appId);
         console.log("---------------------------------------");
         console.log(appId);
         console.log("---------------------------------------");
-        //document.location.href=url;
-        // console.log("let's get this party started");
-    }
-    function fetchAppointments(page){
-      const paginationLinks = document.querySelectorAll('.pagination a');
-      paginationLinks.forEach(link => {
+      }
+      function fetchAppointments(page) {
+        const paginationLinks = document.querySelectorAll('.pagination a');
+        paginationLinks.forEach(link => {
           link.classList.remove('active');
-      });
-      fetch('http://127.0.0.1:8000/appointment?page=1')
-        .then(res => {
-          return res.json();
-        })
-        .then(data =>{
-          data.forEach(appointment=> {
-            console.log(data)
-            const markup = `<tr>
-                            <td>${appointment.customer}</td>
-                            <td>${appointment.day}</td>
-                            <td>${appointment.email}</td>
-                            <td>${appointment.mobile}</td>
-                            <td>${appointment.time}</td>
-                            <td>${appointment.preferred_contact_method}</td>
-                            <td>${appointment.agent}</td>
-                            <td>${appointment.status}</td>
-                            <td>
-                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-success" style="height:40px;width:185px" >Appointment Complete</button>
-                              <a href="users/delete_appointment">
-                                <button id = "ap" value="${appointment.id}" onclick="testJS()" type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >
-                                  Cancel Appointment </button>
-                              </a>
-                            </td>
-                            </tr>`
-            document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
-          });
-          
-        })
-        .catch(error => console.log(error));
-    }
-    fetchAppointments(2);
+        });
+        fetch('http://127.0.0.1:8000/appointment?page=1')
+          .then(res => res.json())
+          .then(data => {
+            data.forEach(appointment => {
+              const markup = `
+                <tr>
+                  <td>${appointment.customer}</td>
+                  <td>${appointment.day}</td>
+                  <td>${appointment.email}</td>
+                  <td>${appointment.mobile}</td>
+                  <td>${appointment.time}</td>
+                  <td>${appointment.preferred_contact_method}</td>
+                  <td>${appointment.agent}</td>
+                  <td>${appointment.status}</td>
+                  <td>
+                    
+                      <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-success" style="height:40px;width:185px">
+                        Appointment Complete
+                      </button>
+                    
+                    {% if "${appointment.status}" != "Cancelled" %}
+                      <a href="users/delete_appointment">
+                        <button id="ap" value="${appointment.id}" onclick="testJS()" type="submit" class="btn btn-danger bt1" style="height:40px;width:185px">
+                          Cancel Appointment
+                        </button>
+                      </a>
+                    {% endif %}
+                  </td>
+                </tr>
+              `;
+              document.querySelector('tbody').insertAdjacentHTML('beforeend', markup);
+            });
+          })
+          .catch(error => console.log(error));
+      }
+      fetchAppointments(2);
     </script>
+  {% else %}
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a>
+  {% endif %}
 {% endblock %}
