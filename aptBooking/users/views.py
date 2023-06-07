@@ -306,14 +306,18 @@ def appointment_api_Completed(request):
 #my part
 
 def appointment_api_Deleted(request):
+    user = request.user
     if request.method == 'GET':
-        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        if user.is_organizer is True:
+            agents = Agent.objects.all().filter(organization = user.organization)
+            appointments = Appointment.objects.all().filter(organization = user.organization).filter(status = Status.objects.get(choice = 'Cancelled'))
+        else:
+            agents = Agent.objects.all().select_related().filter(user_id = user.id)
+            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Cancelled'))
+
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
-        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Cancelled'))
-        customers = Customer.objects.all()
-        users = User.objects.all()
-
+        
         # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
         # 'customer_first_name': str(appointment.customer.user.first_name),
         #             'customer_last_name': str(appointment.customer.user.last_name),
@@ -327,6 +331,7 @@ def appointment_api_Deleted(request):
                     'day': str(appointment.day),
                     'time': str(appointment.time.choice),
                     'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'agent': str(appointment.agent.user.first_name) + " " + str(appointment.agent.user.last_name),
                     'status': str(appointment.status.choice)
                 } for appointment in appointments
             ]
@@ -339,6 +344,9 @@ def appointment_api_Deleted(request):
 
 #fetching appointment based on APPOINTMENT ID
 def delete_appointment_status(request):
+    
+    user = request.user
+
     if request.method == 'POST':
         
         appointment_id = Appointment.objects.get(pk = int(request.POST.get('app_id')))
@@ -352,7 +360,13 @@ def delete_appointment_status(request):
         appointment_id.status = Status.objects.get(pk = status_id)
         appointment_id.save()
 
+        agent = Agent.objects.all().filter(email = user.email)
+        
+        print("AGENT: ", agent)
+
         #adding appointment to cancelled appointments table
+        
+        # organization = Organization.objects.get(choice=slug) 
         new_record = AgentCancelledAppointment(appointment= appointment_id, reason= reason_for_cancellation)
         new_record.save()
 
@@ -360,7 +374,7 @@ def delete_appointment_status(request):
         subject = request.POST.get('subject')
         message = request.POST.get('message')
         email_from = appointment_id.agent.user.email
-        recipient_list = [appointment_id.customer.user.email, ]
+        recipient_list = [appointment_id.customer.user.email,]
         send_mail(subject, message, email_from, recipient_list)
 
     return render(request=request, template_name="delete_appointment.html")
