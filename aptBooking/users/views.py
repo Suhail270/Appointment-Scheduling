@@ -216,6 +216,14 @@ def appointment_api(request):
 def appointments(request):
     return render (request = request, template_name = "appointments.html")
 
+def demo_pending(request):
+    if request.method == 'POST':
+        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
+        appointment.save()
+    stat_choices = [stat for stat in Status.objects.all()]
+    return render(request=request, context={'choices': stat_choices}, template_name="demo_pending.html")
+
 
 def appointment_api_pending(request):
     if request.method == 'POST':
