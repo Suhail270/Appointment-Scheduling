@@ -30,7 +30,7 @@ urlpatterns = [
     path('users/', include('django.contrib.auth.urls')),
     path('users/',include('users.urls')),
 
-    path('test_pending', TemplateView.as_view(template_name='demo_Pending.html')),
+    path('test_pending', views.demo_pending, name='demo_Pending.html'),
     path('test_comp', TemplateView.as_view(template_name='demo_comp.html')),
     path('test_del', TemplateView.as_view(template_name='demo_del.html')),
 
@@ -56,6 +56,14 @@ urlpatterns = [
     
     path('login/', LoginView.as_view(), name='login'),
 
+   
+    path('analytics', views.dashboard_with_pivot, name='dahsboard_with_pivot'),
+    path('analytics_data', views.appointment_api, name='pivot_data'),
+    path('chart', views.chart_test, name='chart'),
+    path('chart_data', views.chart_weekly_appointments, name='chart_data'),
+    path('line_data', views.chart_appointment_times, name='line_data'),
+
+
     path('appointment', views.appointment_api),
     path('appointment_pending', views.appointment_api_pending),
     path('appointment_Completed', views.appointment_api_Completed),
@@ -63,5 +71,6 @@ urlpatterns = [
     path('search/', views.search_appointment_api, name = "search"),
 
     path('appointment', views.appointment_api)
+
 
 ]

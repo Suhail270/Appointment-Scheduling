@@ -3,9 +3,28 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-  {% comment %} Checks if user is logged in {% endcomment %}
-  {% if user.is_authenticated %}
-    <style>
+
+    {%comment%} Checks if user is logged in  {%endcomment%}
+    {% if user.is_authenticated %}
+      <style>
+      .container {
+        display: flex;
+        justify-content: center;
+      }
+      .horizontal-list {
+        display: flex;
+        flex-direction: row;
+        list-style-type: none;
+        padding: 0;
+        text-align:center;
+      }
+
+      .horizontal-list li {
+        margin-left: 20px;
+        margin-right: 10px;
+        
+      }
+
       .tbl-container {
         width: 1000px;
         margin-left: auto;
@@ -41,19 +60,27 @@
         background-color: #007bff;
         color: #fff;
       }
-    </style>
 
-    <h3 class="h">
-      Hi {{ user.username }}, Welcome To Your Appointments Dashboard
-    </h3> 
-    <div class="container my-5">
+      </style>
+      
+      <h3 class="h">
+        Hi {{ user.username }}, Welcome To Your Appointments Dashboard
+      </h3>
+      <div class="container my-5">
+
       <div class="tbl-container bdr">
         <form method="post" id="hiddenForm">
           {% csrf_token %}
           <input type="number" name="app_id" id="app_id" hidden>
           <input type="text" name="app_stat" id="app_stat" hidden>
         </form>
+
+        <form method="get" id="hiddenForm2">
+          <input type="number" name="page_id" id="page_id" hidden>
+          
+        </form>
         <table class="table table-striped">
+
           <thead class="thead-dark">
             <tr>
               <th scope="col">Customer</th>
@@ -70,20 +97,29 @@
           <tbody>
           </tbody>
         </table>
-        <ul class="pagination">
-          {% for page_num in page_range %}
-            <li><a href="#" onclick="fetchAppointments('{{ page_num }}')">{{ page_num }}</a></li>
+        <div class="container">
+        <ul class="horizontal-list">
+          <!-- <p>&larr;</p> -->
+          <p>&laquo;</p>
+          {% for page_num in number %}
+            <li  ><a href="#" onclick="SubmitForm({{ page_num }})">{{ page_num }}</a></li >
           {% endfor %}
+          <p>&raquo;</p>
         </ul>
+      </div>
       </div>
     </div>
 
     <script>
+      function SubmitForm(page){
+        document.getElementById("page_id").value=page
+        document.getElementById("hiddenForm2").submit();
+      }
       function buttonSubmit(formId, appId, opt) {
         var oForm = document.getElementById(formId);
         document.getElementById("app_stat").value = opt;
         document.getElementById("app_id").value = appId;
-        oForm.submit(); 
+        oForm.submit();
       }
       function testJS() {
         var appId = document.getElementById("ap").value;
@@ -137,7 +173,8 @@
           })
           .catch(error => console.log(error));
       }
-      fetchAppointments(2);
+      fetchAppointments({{ thepage }});
+
     </script>
   {% else %}
     <p>You are not logged in</p>

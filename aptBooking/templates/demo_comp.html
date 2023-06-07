@@ -23,6 +23,10 @@
         padding: 20px;
         text-align:center
       }
+      .c {
+        
+        text-align:center
+      }
       </style>
       
       <h3 class="h">
@@ -46,7 +50,7 @@
                 <th scope="col">Preferred Contact</th>
                 <th scope="col">Agent</th>
                 <th scope="col">Status</th>
-                <th scope="col">Actions</th>
+                
             </tr>
           </thead>
           <tbody>
@@ -89,7 +93,8 @@
                             <td>${appointment.email}</td>
                             <td>${appointment.mobile}</td>
                             <td>${appointment.time}</td>
-                            <td>${appointment.preferred_contact_method}</td>
+
+                            <td class='c'>${appointment.preferred_contact_method}</td>
                             <td>${appointment.agent}</td>
                             <td>${appointment.status}</td>
                             <td>
@@ -99,6 +104,7 @@
                                   Cancel Appointment </button>
                               </a>
                             </td>
+
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });

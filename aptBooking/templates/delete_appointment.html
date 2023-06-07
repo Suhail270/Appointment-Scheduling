@@ -10,12 +10,16 @@
     
 
     <input type="number" name="app_id" id="app_id" hidden>
-    
-    <p>Please state the reason for cancellation:</p>
-    <input type="text" name="reason_for_cancel" id="reason_for_cancel" required>
 
-    <button type="submit">Submit</button>
-    <a href="/"><button type="button"> Cancel </button></a>
+    <div class="form-group" >
+      <label for="usr">Please state the reason for cancellation:</label>
+      <input type="text" class="form-control" style="width:400px;" name="reason_for_cancel" id="reason_for_cancel" required>
+    </div>
+    <!-- <p>Please state the reason for cancellation:</p> -->
+
+    <button type="submit" class="btn btn-success">Submit</button>
+    <a href="/" ><button type="button" class="btn btn-danger"> Cancel </button></a>
+
   </form>
 
   <script>

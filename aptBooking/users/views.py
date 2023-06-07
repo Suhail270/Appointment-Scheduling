@@ -15,9 +15,14 @@ from django_filters import FilterSet
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 import time
+
+import datetime
+
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
+import math
+
 
 def register(request, slug):
     # Retrieve the organization instance based on the slug or segment
@@ -44,48 +49,25 @@ def register(request, slug):
     return render(request=request, template_name="signup.html", context={"register_form": form})
 
 
-# def dateTime(request):
-#     context={}
-#     context['context']=DateForm()
-#     return render(request=request, template_name="dashboard.html",context={"context":context})
+def update_appointment_status(request):
+    if request.method == 'POST':
+        print(request.POST)
+        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
+        appointment.save()
+    stat_choices = [stat for stat in Status.objects.all()]
+    return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
 
-# class AppointmentFilter(FilterSet):
-#     Class Meta:
-#         model = Appointment
-#         fields -
-#check victor
-
-# class appointmentsListView(SingleTableView):
-#     model = Appointment
-#     table_class = AppointmentTable
-#     template_name = 'appointments.html'
-
-#     def get_queryset(self, *args, **kwargs):
-#         qs = super(appointmentsListView, self).get_queryset(*args, **kwargs)
-#         a_id_list = Agent.objects.all().filter(user_id = self.request.user.id)
-#         a_id = int(a_id_list[0].id)
-#         qs = qs.all().filter(agent_id = a_id)
-#         return qs
-
-# @csrf_exempt
-# def update_appointment_status(request):
-#     if request.method == 'POST':
-#         print(request.POST)
-#         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
-#         appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
-#         appointment.save()
-#     stat_choices = [stat for stat in Status.objects.all()]
-#     return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
-
-# @csrf_exempt
-# def dashboard_dropdown(request):
-#     if request.method == 'POST':
-#         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
-#         appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
-#         appointment.save()
-#     if True:
-#         stat_choices = [stat for stat in Status.objects.all()]
-#         return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
+@csrf_exempt
+def dashboard_dropdown(request):
+    if request.method == 'POST':
+        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        appointment.status = Status.objects.get(pk = request.POST.get('app_stat'))
+        appointment.save()
+    if True:
+        stat_choices = [stat for stat in Status.objects.all()]
+        number = Appointment.objects.filter(agent = Agent.objects.get(user_id = request.user.id)).count()
+        return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
 
 @csrf_exempt
 def dashboard(request):
@@ -94,17 +76,20 @@ def dashboard(request):
         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
         appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
         appointment.save()
-
     stat_choices = [stat for stat in Status.objects.all()]
-    return render(request=request, context={'choices': stat_choices}, template_name="dashboard.html")
+    if len(Agent.objects.filter(user_id = request.user.id)) == 0:
+        number = 0
+    else:
+        number = (Appointment.objects.filter(agent = Agent.objects.get(user_id = request.user.id)).count())/2
+    number = math.ceil(number)
+    number = [i + 1 for i in range(number)]
+    if request.GET == {}:
+        return render(request=request, context={'choices': stat_choices,'number':number, 'thepage': 1}, template_name="dashboard.html")
+    else:
+        return render(request=request, context={'choices': stat_choices,'number':number, 'thepage': int(request.GET.getlist('page_id')[0])}, template_name="dashboard.html")
 
-# def update_appointment_status_completed(request):
-#     if request.method == 'POST':
-#         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
-#         appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
-#         appointment.save()
-#     stat_choices = [stat for stat in Status.objects.all()]
-#     return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
+def dashboard_with_pivot(request):
+    return render(request, 'dashboard_with_pivot.html', {})
 
 @csrf_exempt
 def search_appointment_api(request):
@@ -191,26 +176,7 @@ def appointment_api(request):
         page_number = request.GET.get('page')  
         customers = Customer.objects.all()
         users = User.objects.all()
-
-        # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
-        # 'customer_first_name': str(appointment.customer.user.first_name),
-        #             'customer_last_name': str(appointment.customer.user.last_name),
-        # json = simplejson.dumps(
-        #     [
-        #         {
-        #             'id': str(appointment.id),
-        #             'customer': str(appointment.customer.user.username),
-        #             'email': str(appointment.customer.user.email),
-        #             'mobile': str(appointment.customer.user.mobile),
-        #             'day': str(appointment.day),
-        #             'time': str(appointment.time.choice),
-        #             'preferred_contact_method': str(appointment.preferred_contact_method.choice),
-        #             'status': str(appointment.status.choice)
-        #         } for appointment in appointments
-        #     ]
-        # )
-        # # serialized = appointmentSerializer(appointments, many = True)
-        # return JsonResponse(simplejson.loads(json), safe = False)
+        
         try:
             appointments_page = paginator.get_page(page_number)
         except:
@@ -229,6 +195,15 @@ def appointment_api(request):
             appointments_data.append(appointment_dict)
 
         return JsonResponse(appointments_data, safe=False)
+    
+def demo_pending(request):
+    if request.method == 'POST':
+        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
+        appointment.save()
+    stat_choices = [stat for stat in Status.objects.all()]
+    return render(request=request, context={'choices': stat_choices}, template_name="demo_pending.html")
+
 
 def appointment_api_pending(request):
     user = request.user
@@ -266,7 +241,54 @@ def appointment_api_pending(request):
         # serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(simplejson.loads(json), safe = False)
 
-# my part
+def chart_test(request):
+    return render(request, "charts_new.html", {})
+
+def chart_appointment_times(request):
+    no_of_days = int(request.GET.getlist('days')[0])
+    agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+    appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+    times = TimeChoices.objects.all()
+    date = datetime.date.today() - datetime.timedelta(no_of_days)
+    times_list = [t.choice for t in times]
+    time_appointments_completed = [0 for t in times]
+    time_appointments_cancelled = [0 for t in times]
+    date_appointments = appointments.filter(day__gt=date)
+    print('here')
+    for i in range(len(times_list)):
+        time_appointments_completed[i] = date_appointments.filter(time = times[i]).filter(status = Status.objects.get(choice = "Completed")).count()
+        time_appointments_cancelled[i] = date_appointments.filter(time = times[i]).filter(status = Status.objects.get(choice = "Cancelled")).count()
+    line_data = {
+        "labels": times_list,
+        "completed_apps": time_appointments_completed,
+        "cancelled_apps": time_appointments_cancelled, 
+    }
+    print(line_data)
+    return JsonResponse(line_data, safe=False)
+        
+def chart_weekly_appointments(request):
+    no_of_days = int(request.GET.getlist('days')[0])
+    dates = []
+    completed = []
+    cancelled = []
+    agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+    appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+    comp_stat = Status.objects.get(choice = "Completed")
+    canc_stat = Status.objects.get(choice = "Cancelled")
+    for i in range(no_of_days):
+        date = datetime.date.today() - datetime.timedelta(days = i)
+        dates.append(date)
+        date_appointments = appointments.filter(day = date)
+        completed.append(date_appointments.filter(status = comp_stat).count())
+        cancelled.append(date_appointments.filter(status = canc_stat).count())
+    bar_data = {
+        "labels":dates[::-1],
+        "chartLabel": "Completed",
+        "chartdata":completed[::-1],
+        "chartLabel2": "Cancelled",
+        "chartdata2":cancelled[::-1],
+    }
+    return JsonResponse(bar_data, safe=False)
 
 def appointment_api_Completed(request):
     user = request.user
@@ -282,9 +304,6 @@ def appointment_api_Completed(request):
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
 
-        # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
-        # 'customer_first_name': str(appointment.customer.user.first_name),
-        #             'customer_last_name': str(appointment.customer.user.last_name),
         json = simplejson.dumps(
             [
                 {
@@ -300,10 +319,8 @@ def appointment_api_Completed(request):
                 } for appointment in appointments
             ]
         )
-        # serialized = appointmentSerializer(appointments, many = True)
+        
         return JsonResponse(simplejson.loads(json), safe = False)
-
-#my part
 
 def appointment_api_Deleted(request):
     user = request.user
@@ -317,10 +334,7 @@ def appointment_api_Deleted(request):
 
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
-        
-        # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
-        # 'customer_first_name': str(appointment.customer.user.first_name),
-        #             'customer_last_name': str(appointment.customer.user.last_name),
+
         json = simplejson.dumps(
             [
                 {
@@ -336,13 +350,10 @@ def appointment_api_Deleted(request):
                 } for appointment in appointments
             ]
         )
-        # serialized = appointmentSerializer(appointments, many = True)
+
         return JsonResponse(simplejson.loads(json), safe = False)
 
 
-# currently shows form for email subject and body to agent, need to be autogenereated
-
-#fetching appointment based on APPOINTMENT ID
 def delete_appointment_status(request):
     
     user = request.user
@@ -391,4 +402,5 @@ We hope to you see you soon!'''
         return redirect('home') 
     
     return render(request=request, template_name="delete_appointment.html")
+
 

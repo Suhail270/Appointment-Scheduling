@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+<meta charset="utf-8">
+<title>chatsjs</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<style>
+    .h {
+        padding: 10px;
+        text-align:center
+    }
+    .center {
+        border: 5px solid;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 10px;
+    }
+    .outbox{
+        text-align: center;
+    }
+    .container{
+        width: 50%;
+        display: inline-block;
+    }
+
+</style>
+</head>
+
+<body class="">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="http://127.0.0.1:8000/"> Appointments </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="http://127.0.0.1:8000/test_pending">Appointments Pending</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="http://127.0.0.1:8000/chart">Analytics</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="http://127.0.0.1:8000/test_comp">Appointments Completed</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="http://127.0.0.1:8000/test_del">Appointments Deleted</a>
+            </li>
+             <li class="nav-item">
+              <a class="nav-link" href="http://127.0.0.1:8000/users/search_appointment/">Search Appointments </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" href="{% url 'logout' %}">Log out</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+	<h1 class="h"> <b>Analytics</b> dashboard</h1>
+
+<hr />
+<p class="h">
+    <h2 class="h">Appointments from the past
+    <input type="number" value="7" style="width:57px" min="1" id="noOfDays" name="noOfDays" onchange="updatePage()"> days
+
+    <b>
+        <button onclick="updateDays(7)" class="btn btn-primary" >Week</button>
+        <button onclick="updateDays(30)" class="btn btn-primary" >Month</button>
+    </b>
+</h2>
+    <div class="col-sm h" style="padding-bottom: 30px;" >
+        <button onclick="putPie()" id="pieButton" class="tabButton btn btn-info">Pie Chart</button>
+        <button onclick="putBar()" id="barButton" class="tabButton btn btn-info">Bar Chart</button>
+        <button onclick="putLine()" id="lineButton" class="tabButton btn btn-info">Line Chart</button>
+    </div>
+
+</p>
+    <center>
+    <div class="">
+        <div class="col-md-6 tabelement" id="barDiv" style"display:none">   
+            <h4 style="margin-bottom: 50px;">Appointments Completed/Cancelled per Day</h4>  
+            <canvas id="myChartBar" width="500" height="500"></canvas>
+        </div>
+        <div class="col-md-6 tabelement" id="pieDiv">
+            <h4 style="margin-bottom: 50px;">Appointments Completed/Cancelled in the past</h4>
+            <canvas id="myPieChart" width="500" height="500"></canvas>
+        </div>
+        <div class="col-md-6 tabelement" id="lineDiv">
+            <h4 style="margin-bottom: 50px;">Appointments completed/cancelled per time range</h4>
+            <canvas id="myLineChart" width="500" height="500"></canvas>
+        </div>  
+    </div>
+    </center>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+<script>
+
+    function putPie() {
+        tabbuttons = document.getElementsByClassName("tabButton");
+        for (let i = 0; i < tabbuttons.length; i++) {
+            tabbuttons[i].disabled = false
+        }
+        document.getElementById("pieButton").disabled = true;
+        tabelements = document.getElementsByClassName("tabelement");
+        console.log('ww');
+        console.log(tabelements);
+        for (let i = 0; i < tabelements.length; i++) {
+            console.log(tabelements[i]);
+            tabelements[i].style.display = "none";
+        }
+        pieChart = undefined;
+        document.getElementById("myPieChart").remove();
+        $('#pieDiv').append('<canvas id="myPieChart"></canvas>');
+        getBarPieData();
+        document.getElementById("pieDiv").style.display = "block";
+    }
+
+    function putBar() {
+        tabbuttons = document.getElementsByClassName("tabButton");
+        for (let i = 0; i < tabbuttons.length; i++) {
+            tabbuttons[i].disabled = false
+        }
+        document.getElementById("barButton").disabled = true;
+        tabelements = document.getElementsByClassName("tabelement");
+        console.log('ww');
+        console.log(tabelements);
+        for (let i = 0; i < tabelements.length; i++) {
+            console.log(tabelements[i]);
+            tabelements[i].style.display = "none";
+        }
+        barGraph = undefined;
+        document.getElementById("myChartBar").remove();
+        $('#barDiv').append('<canvas id="myChartBar"></canvas>');
+        getBarPieData();
+        document.getElementById("barDiv").style.display = "block";
+    }
+
+    function putLine() {
+        tabbuttons = document.getElementsByClassName("tabButton");
+        for (let i = 0; i < tabbuttons.length; i++) {
+            tabbuttons[i].disabled = false
+        }
+        document.getElementById("lineButton").disabled = true;
+        tabelements = document.getElementsByClassName("tabelement");
+        console.log('ww');
+        console.log(tabelements);
+        for (let i = 0; i < tabelements.length; i++) {
+            console.log(tabelements[i]);
+            tabelements[i].style.display = "none";
+        }
+        lineChart = undefined;
+        document.getElementById("myLineChart").remove();
+        $('#lineDiv').append('<canvas id="myLineChart"></canvas>');
+        getTimeData();
+        document.getElementById("lineDiv").style.display = "block";
+    }
+
+    function updateDays(days) {
+        document.getElementById("noOfDays").value = days;
+        updatePage();
+    }
+
+    var barData;
+    var barGraph;
+    var pieData;
+    var pieChart;
+    var lineData;
+    var lineChart;
+
+    function getTimeData() {
+        var endpoint = '/line_data';
+        $.ajax({
+            method: "GET",
+            url: endpoint,
+            data: {
+                days: document.getElementById("noOfDays").value
+            },
+            success: function(data) {
+                lineData = data;
+                if (lineChart == undefined) {
+                    console.log('here2')
+                    drawLineGraph(data, "myLineChart");
+                } else {
+                    updateLine(data);
+                }
+            },
+            error: function(error_data) {
+                console.log(error_data);
+            }
+            });
+    }
+
+    function getBarPieData() {
+        var endpoint = '/chart_data';
+        $.ajax({
+        method: "GET",
+        url: endpoint,
+        data: {
+            days: document.getElementById("noOfDays").value
+        },
+        success: function(data) {
+            
+            newData = [0, 0];
+            var chartLabel = data.chartLabel;
+            var chartdata = data.chartdata;
+            for (let i = 0; i < document.getElementById("noOfDays").value; i++) {
+                newData[0] = newData[0] + chartdata[i];
+            }
+            var chartLabel2 = data.chartLabel2;
+            var chartdata2 = data.chartdata2;
+            for (let i = 0; i < document.getElementById("noOfDays").value; i++) {
+                newData[1] = newData[1] + chartdata2[i];
+            }
+            pieData = newData;
+            barData = data;
+            if (pieChart == undefined) {
+                drawPieChart(pieData, 'myPieChart');
+            } else {
+                updatePie(pieData);
+            }
+            if (barGraph == undefined) {
+                console.log('here');
+                drawBarGraph(barData, 'myChartBar');
+            } else {
+                updateBar(barData);
+            }
+        },
+        error: function(error_data) {
+            console.log(error_data);
+        }
+        });
+    }
+
+    function updateBar(data) {
+        var labels = data.labels;
+        var chartLabel = data.chartLabel;
+        var chartdata = data.chartdata;
+        var chartLabel2 = data.chartLabel2;
+        var chartdata2 = data.chartdata2;
+        barGraph.data.labels = labels;
+        barGraph.data.datasets[0].data = chartdata;
+        barGraph.data.datasets[1].data = chartdata2;
+        barGraph.update();
+    }
+
+    function drawBarGraph(data, id) {
+        var labels = data.labels;
+        var chartLabel = data.chartLabel;
+        var chartdata = data.chartdata;
+        var chartLabel2 = data.chartLabel2;
+        var chartdata2 = data.chartdata2;
+        var ctx = document.getElementById(id).getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+            labels: labels,
+            datasets: [{
+                label: chartLabel,
+                data: chartdata,
+                borderWidth: 1,
+                backgroundColor: 'rgba(127, 127, 255, 1)',
+                borderRadius: 5,
+                borderSkipped: false
+            },
+            {
+                label: chartLabel2,
+                data: chartdata2,
+                borderWidth: 1,
+                backgroundColor: 'rgba(255, 127, 127, 1)',
+                borderRadius: 5,
+                borderSkipped: false
+            }]
+            },
+            options: {
+            scales: {
+                yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+                }]
+            }
+            }
+        })
+        barGraph = myChart;
+        }
+
+        function updatePie(data) {
+            pieChart.data.datasets[0].data = data;
+            pieChart.update();
+        }
+    
+        function drawPieChart(data, id) {
+            var ctx = document.getElementById(id).getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                labels: [
+                    'Completed',
+                    'Cancelled'
+                ],
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        'rgba(127, 127, 255, 1)',
+                        'rgba(255, 127, 127, 1)'
+                    ]
+                }]
+                },
+                options: {}
+            });
+            pieChart = myChart;
+            }
+
+            function updateLine(data) {
+                console.log(lineChart.data.datasets[0].data);
+                console.log(data.completed_apps);
+                console.log(lineChart.data.datasets[1].data);
+                console.log(data.cancelled_apps);
+                lineChart.data.datasets[0].data = data.completed_apps;
+                lineChart.data.datasets[1].data = data.cancelled_apps;
+                lineChart.update();
+                console.log('bro')
+            }
+
+            function drawLineGraph(data, id) {
+                var ctx = document.getElementById(id).getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: "Completed",
+                            data: data.completed_apps,
+                            backgroundColor: 'rgba(127, 127, 255, 1)',
+                            fill: false,
+                            tension: 0.2,
+                            borderWidth: 3,
+                            borderColor: 'rgba(127, 127, 255, 1)'
+                        },
+                        {
+                            label: "Cancelled",
+                            data: data.cancelled_apps,
+                            backgroundColor: 'rgba(255, 127, 127, 1)',
+                            fill: false,
+                            tension: 0.2,
+                            borderWidth: 3,
+                            borderColor: 'rgba(255, 127, 127, 1)'
+                        }
+                    ]
+                    },
+                    options: {}
+                });
+                lineChart = myChart;
+            }
+    function updatePage() {
+        getBarPieData();
+        getTimeData();
+    }
+    
+    putPie();
+
+</script>
+</body>
+
+</html>
