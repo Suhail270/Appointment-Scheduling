@@ -350,11 +350,13 @@ def delete_appointment_status(request):
     if request.method == 'POST':
         
         appointment_id = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        print("APPOINTMENT: ", appointment_id)
         reason_for_cancellation = request.POST.get('reason_for_cancel')
         status_id = Status.objects.filter(choice='Cancelled').values('id')[0]['id']  
         
         print("---- appointment_id ---- ")
-        print(request.POST.get('app_id') == "")
+        print(request.POST.get('app_id'))
+        print("APPOINTMENT: ", appointment_id)
 
         #updating status of appointment to cancelled
         appointment_id.status = Status.objects.get(pk = status_id)
@@ -370,15 +372,28 @@ def delete_appointment_status(request):
         #adding appointment to cancelled appointments table
         
         # organization = Organization.objects.get(choice=slug) 
-        new_record = AgentCancelledAppointment(appointment= appointment_id, reason= reason_for_cancellation, organization = organization)
+        new_record = AgentCancelledAppointment(appointment = appointment_id, reason = reason_for_cancellation, organization = organization)
         new_record.save()
 
         #sending an email
-        subject = request.POST.get('subject')
-        message = request.POST.get('message')
+        
+        customer = str(Appointment.objects.get(pk = int(request.POST.get('app_id'))).customer.user.first_name)
+        agent = Appointment.objects.get(pk = int(request.POST.get('app_id'))).agent
+
+        subject = "Appointment Cancellation"
+        message = '''Dear ''' + customer + ''',
+        
+We are sorry to inform you that your appointment with agent ''' + str(agent.user.first_name) + " " + str(agent.user.last_name) + " on " + str(appointment_id.day) + " at " + str(appointment_id.time.choice) + ''' has been cancelled.
+        
+Please book another appointment with us via our portal or contact our customer support for more information. We apologize for any inconvenience caused and are contantly working to improve our customer experience.
+        
+We hope to you see you soon!'''
+
         email_from = appointment_id.agent.user.email
         recipient_list = [appointment_id.customer.user.email,]
         send_mail(subject, message, email_from, recipient_list)
 
+        return redirect('home') 
+    
     return render(request=request, template_name="delete_appointment.html")
 
