@@ -114,11 +114,7 @@ def dashboard(request):
 def search_appointment_api(request):
        
         user = request.user
-        print("USER ORG: ", user.organization)
-        print("ORGANIZER: ", user.is_organizer)
-
-        
-        
+                
         if user.is_organizer is True:
             
             agents = Agent.objects.all().filter(organization = user.organization)
@@ -136,7 +132,7 @@ def search_appointment_api(request):
 
         else:
             
-            agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+            agents = Agent.objects.all().select_related().filter(user_id = user.id)
 
             if len(agents) == 0:
                 return JsonResponse(None, safe = False)
@@ -186,13 +182,25 @@ def search_demo(request):
 
 # my part, same as search_appointment api
 
+
 @csrf_exempt
 def appointment_api(request):
+    
+    user = request.user
+
     if request.method == 'GET':
-        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        
+        if user.is_organizer is True:
+            agents = Agent.objects.all().filter(organization = user.organization)
+            appointments = Appointment.objects.all().filter(organization = user.organization)
+             
+        else:
+            agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
-        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+        
         paginator = Paginator(appointments, per_page=2)  
         page_number = request.GET.get('page')  
         customers = Customer.objects.all()
@@ -230,13 +238,11 @@ def appointment_api(request):
             appointment_dict['mobile'] = str(appointment.customer.user.mobile)
             appointment_dict['time'] = str(appointment.time.choice)
             appointment_dict['preferred_contact_method'] = str(appointment.preferred_contact_method.choice)
+            appointment_dict['agent'] = str(appointment.agent.user.first_name) + " " + str(appointment.agent.user.last_name)
             appointment_dict['status'] = str(appointment.status.choice)
             appointments_data.append(appointment_dict)
 
         return JsonResponse(appointments_data, safe=False)
-    
-# def appointments(request):
-#     return render (request = request, template_name = "appointments.html")
 
 # my part
 
