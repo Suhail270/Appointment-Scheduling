@@ -10,6 +10,11 @@
 
 <body>
 
+    <nav class="navigation-bar">
+        <img src="{% static 'images/logoAY.png' %}", class="logo-img">
+        <a href="/sales/customer_reg">Appointment Booking</a>
+    </nav>
+
 <!--Register-->
 
 <div id="bigbox">
@@ -35,6 +40,13 @@
         <div class="formdetails">
             <form method="POST">
                 {% csrf_token %}
+                
+                <!-- <div class="mb-4" style="display: none;"> -->
+
+                    {{ form.organization }}
+
+                <!-- </div> -->
+
                 <p class="fname"> First Name <span class="star">*</span></p> 
                 {{ form.first_name }}  
                 <p class="lname"> Last Name <span class="star">*</span></p>
