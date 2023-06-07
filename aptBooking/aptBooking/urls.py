@@ -30,7 +30,7 @@ urlpatterns = [
     path('users/', include('django.contrib.auth.urls')),
     path('users/',include('users.urls')),
 
-    path('test_pending', TemplateView.as_view(template_name='demo_Pending.html')),
+    path('test_pending', views.demo_pending, name='demo_Pending.html'),
     path('test_comp', TemplateView.as_view(template_name='demo_comp.html')),
     path('test_del', TemplateView.as_view(template_name='demo_del.html')),
 
