@@ -5,41 +5,74 @@
 <meta charset="utf-8">
 <title>chatsjs</title>
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 
 <!-- jQuery library -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
-
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
 </head>
 
-<body class="container-fluid">
+<body class="">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="http://127.0.0.1:8000/"> Appointments </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="http://127.0.0.1:8000/test_pending">Appointments Pending</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="http://127.0.0.1:8000/chart">Analytics</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="http://127.0.0.1:8000/test_comp">Appointments Completed</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="http://127.0.0.1:8000/test_del">Appointments Deleted</a>
+            </li>
+             <li class="nav-item">
+              <a class="nav-link" href="http://127.0.0.1:8000/users/search_appointment/">Search Appointments </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" href="{% url 'logout' %}">Log out</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
 <center class="row">
 	<h1> <b>Analytics</b> dashboard</h1>
 </center>
 <hr />
+<p>
+    Appointments completed/cancelled in the past <input type="number" value="7" style="width:50px" id="noOfDays" name="noOfDays" onchange="updatePage()"> days
+    <b>
+        <button onclick="updateDays(7)" class="btn btn-primary" >Week</button>
+        <button onclick="updateDays(30)" class="btn btn-primary" >Month</button>
+    </b>
+</p>
 <div class="row">
-	<p>
-        Appointments completed/cancelled in the past <input type="number" value="7" style="width:50px" id="noOfDays" name="noOfDays" onchange="updatePage()"> days
-    </p>
-    <button onclick="updateDays(7)">week</button>
-    <button onclick="updateDays(30)">month</button>
-	<div class="col-md-6">
-		<canvas id="myChartBar"></canvas>
-	</div>
-	<div class="col-md-6">
-		<canvas id="myPieChart"></canvas>
-	</div>
-</div>
-<div class="row">
-    <div class="col-md-6">
-		<canvas id="myLineChart"></canvas>
-	</div>
-</div>
+    
+    
+        <div class="col-md-6">
+            <canvas id="myChartBar"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="myPieChart"></canvas>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <canvas id="myLineChart"></canvas>
+        </div>
+    </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
@@ -222,13 +255,19 @@
                             label: "Completed",
                             data: data.completed_apps,
                             backgroundColor: 'rgba(127, 127, 255, 1)',
-                            fill: false
+                            fill: false,
+                            tension: 0.2,
+                            borderWidth: 3,
+                            borderColor: 'rgba(127, 127, 255, 1)'
                         },
                         {
                             label: "Cancelled",
                             data: data.cancelled_apps,
                             backgroundColor: 'rgba(255, 127, 127, 1)',
-                            fill: false
+                            fill: false,
+                            tension: 0.2,
+                            borderWidth: 3,
+                            borderColor: 'rgba(255, 127, 127, 1)'
                         }
                     ]
                     },
