@@ -84,7 +84,6 @@ def dashboard_dropdown(request):
 @csrf_exempt
 def dashboard(request):
     if request.method == 'POST':
-        print(request.POST)
         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
         appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
         appointment.save()
@@ -95,7 +94,6 @@ def dashboard(request):
         number = (Appointment.objects.filter(agent = Agent.objects.get(user_id = request.user.id)).count())/2
     number = math.ceil(number)
     number = [i + 1 for i in range(number)]
-    print(number)
     if request.GET == {}:
         return render(request=request, context={'choices': stat_choices,'number':number, 'thepage': 1}, template_name="dashboard.html")
     else:
@@ -220,7 +218,11 @@ def appointments(request):
 
 
 def appointment_api_pending(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
+        appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
+        appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
+        appointment.save()
+    if True:
         agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
