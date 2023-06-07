@@ -11,7 +11,7 @@
 <body>
 
     <nav class="navigation-bar">
-        <img src="{% static 'images/logoAY.png' %}", class="logo-img">
+        <img src="{% static 'images/logoo.png' %}", class="logo-img">
         <a href="/sales/customer_reg">Appointment Booking</a>
     </nav>
 
@@ -41,11 +41,11 @@
             <form method="POST">
                 {% csrf_token %}
                 
-                <!-- <div class="mb-4" style="display: none;"> -->
+                <div class="mb-4" style="display: none;">
 
                     {{ form.organization }}
 
-                <!-- </div> -->
+                </div>
 
                 <p class="fname"> First Name <span class="star">*</span></p> 
                 {{ form.first_name }}  

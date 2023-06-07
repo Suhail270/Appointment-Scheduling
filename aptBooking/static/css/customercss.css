@@ -32,11 +32,17 @@
   background-color: rgb(133, 131, 131);
 } */
 
+body {
+  margin: 0;
+   padding: 0;
+   background-color: rgb(168, 201, 240);
+}
+
  #bigbox {
     width: 1500px;
     height: 650px;
     /* border: 1px black solid; */
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     background-color: white;
     border-radius: 25px;
     margin: auto;
@@ -47,7 +53,7 @@
     width: 480px;
     height: 630px;
     float: left;
-    background-color: #4242f7;
+    background-color: rgb(78, 151, 240);
     margin-top: 10px;
     margin-left: 15px;
     border-radius: 25px;
@@ -98,21 +104,26 @@
   .custheader {
     color: black;
     margin-top: 20px;
-    margin-left: 345px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    margin-left: 35%;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     font-size: larger;
   }
 
   .custbutton {
-    background-color: #4242f7;
+    background-color: rgb(78, 151, 240);
     color: white;
     margin-top: 40px;
-    margin-left: 450px;
+    margin-left: 40%;
     border: none;
     border-radius: 5px;
     width: 170px;
     height: 40px;
     opacity: 0.95;
+  }
+
+  .custbutton:hover{
+    background-color: rgb(44, 85, 234);
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19); 
   }
 
   a:link, a:visited {
@@ -121,10 +132,10 @@
   }
 
 .form-fname, .form-lname, .form-mobile, .form-email {
-    width: 550px;
+    width: 750px;
     height: 30px;
     margin-bottom: 5px;
-    margin-left: 250px;
+    margin-left: 100px;
     -webkit-transition: 0.5s;
     transition: 0.5s;
     outline: none;
@@ -139,7 +150,7 @@
 
 .fname, .lname, .num, .email {
   margin-top: 30px;
-  margin-left: 250px;
+  margin-left: 100px;
   font-size: larger;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
@@ -151,9 +162,8 @@
 .navigation-bar {
   width: 100%;
   height: 80px;
-  background-color: #333; 
-  margin: 0;
-  padding: 0;
+  background-color: white; 
+  margin: -1;
 }
 
 .logo-img {
@@ -163,6 +173,7 @@
   height: 80px;
   margin-right: 20px;
 }
+
 .navigation-bar a {
   display: inline-block;
   vertical-align: top;
@@ -170,6 +181,9 @@
   height: 80px;        
   line-height: 80px;
   text-decoration: none;
+  color: black;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 20px;
 }
 
 /* .navigation-bar img:hover:not(.active) {
@@ -177,5 +191,5 @@
 } */
 
 .navigation-bar a:hover:not(.active) {
-  background-color: #111;
+  text-decoration: underline;
 }
