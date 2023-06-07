@@ -133,7 +133,7 @@
         paginationLinks.forEach(link => {
           link.classList.remove('active');
         });
-        fetch('http://127.0.0.1:8000/appointment?page=1')
+        fetch('http://127.0.0.1:8000/appointment?page=' + page)
           .then(res => res.json())
           .then(data => {
             data.forEach(appointment => {
@@ -164,12 +164,8 @@
             console.log(ls.length);
             console.log(document.getElementsByClassName("Cancelled").length);
             for (let i = 0; i < ls.length; i++) {
-              console.log(i);
-              console.log(ls[i].style.display);
               ls[i].style.display = "none";
-              console.log(ls[i].style.display);
             }
-
           })
           .catch(error => console.log(error));
       }

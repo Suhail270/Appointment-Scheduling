@@ -39,7 +39,7 @@
           <input type="number" name="app_id" id="app_id" hidden>
           <input type="text" name="app_stat" id="app_stat" hidden>
         </form>
-        <table class="table table-striped  ">
+        <table class="table table-striped">
           <thead class="thead-dark">
             <tr>
                 <th scope="col">Customer</th>
@@ -93,18 +93,9 @@
                             <td>${appointment.email}</td>
                             <td>${appointment.mobile}</td>
                             <td>${appointment.time}</td>
-
-                            <td class='c'>${appointment.preferred_contact_method}</td>
+                            <td>${appointment.preferred_contact_method}</td>
                             <td>${appointment.agent}</td>
                             <td>${appointment.status}</td>
-                            <td>
-                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-success" style="height:40px;width:185px" >Appointment Complete</button>
-                              <a href="users/delete_appointment">
-                                <button id = "ap" value="${appointment.id}" onclick="testJS()" type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >
-                                  Cancel Appointment </button>
-                              </a>
-                            </td>
-
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });

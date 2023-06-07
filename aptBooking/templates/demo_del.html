@@ -92,13 +92,6 @@
                             <td>${appointment.preferred_contact_method}</td>
                             <td>${appointment.agent}</td>
                             <td>${appointment.status}</td>
-                            <td>
-                              <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-success" style="height:40px;width:185px" >Appointment Complete</button>
-                              <a href="users/delete_appointment">
-                                <button id = "ap" value="${appointment.id}" onclick="testJS()" type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >
-                                  Cancel Appointment </button>
-                              </a>
-                            </td>
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });

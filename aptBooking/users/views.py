@@ -140,7 +140,6 @@ def search_appointment_api(request):
         # serialized = appointmentSerializer(appointments, many = True)
         return JsonResponse(simplejson.loads(json), safe = False)
 
-
 @csrf_exempt
 def search_demo(request):
     global date
