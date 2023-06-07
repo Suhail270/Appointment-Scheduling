@@ -106,10 +106,6 @@ def dashboard(request):
 #     stat_choices = [stat for stat in Status.objects.all()]
 #     return render(request=request, context={'choices': stat_choices}, template_name="update_appointment.html")
 
-
-# my part. currently displays for all orgs, should display only for my org.
-# scope is only agents, need to handle orgs.
-
 @csrf_exempt
 def search_appointment_api(request):
        
@@ -118,14 +114,9 @@ def search_appointment_api(request):
         if user.is_organizer is True:
             
             agents = Agent.objects.all().filter(organization = user.organization)
-
-            if len(agents) == 0:
-                return JsonResponse(None, safe = False)
-            
             #if date or time is Null, display all appointments
             if (date is None):
                 appointments = Appointment.objects.all().filter(organization = user.organization)
-
             #if not, display appointments of given date and time    
             else:
                 appointments = Appointment.objects.all().filter(day = date, time_id = time_slot, organization = user.organization)
@@ -133,17 +124,15 @@ def search_appointment_api(request):
         else:
             
             agents = Agent.objects.all().select_related().filter(user_id = user.id)
-
-            if len(agents) == 0:
-                return JsonResponse(None, safe = False)
-        
             #if date or time is Null, display all appointments
             if (date is None):
                 appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
-
             #if not, display appointments of given date and time    
             else:
                 appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id), day = date, time_id = time_slot)
+        
+        if len(agents) == 0:
+                return JsonResponse(None, safe = False)
 
         # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
         # 'customer_first_name': str(appointment.customer.user.first_name),
@@ -180,9 +169,6 @@ def search_demo(request):
     time_choices = [stat for stat in TimeChoices.objects.all()]
     return render(request = request, context={'choices': time_choices}, template_name = "search_demo.html")
 
-# my part, same as search_appointment api
-
-
 @csrf_exempt
 def appointment_api(request):
     
@@ -195,7 +181,7 @@ def appointment_api(request):
             appointments = Appointment.objects.all().filter(organization = user.organization)
              
         else:
-            agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+            agents = Agent.objects.all().select_related().filter(user_id = user.id)
             appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
 
         if len(agents) == 0:
@@ -247,13 +233,19 @@ def appointment_api(request):
 # my part
 
 def appointment_api_pending(request):
+    user = request.user
+   
     if request.method == 'GET':
-        agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
+        
+        if user.is_organizer is True:
+            agents = Agent.objects.all().filter(organization = user.organization)
+            appointments = Appointment.objects.all().filter(organization = user.organization).filter(status = Status.objects.get(choice = 'Pending'))
+        else:
+            agents = Agent.objects.all().select_related().filter(user_id = user.id)
+            appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Pending'))
+
         if len(agents) == 0:
             return JsonResponse(None, safe = False)
-        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id)).filter(status = Status.objects.get(choice = 'Pending'))
-        customers = Customer.objects.all()
-        users = User.objects.all()
 
         # 'customer': str(users.filter(id = customers.filter(id = appointment.customer_id)[0].user_id)[0].username)
         # 'customer_first_name': str(appointment.customer.user.first_name),
@@ -268,6 +260,7 @@ def appointment_api_pending(request):
                     'day': str(appointment.day),
                     'time': str(appointment.time.choice),
                     'preferred_contact_method': str(appointment.preferred_contact_method.choice),
+                    'agent': str(appointment.agent.user.first_name) + " " + str(appointment.agent.user.last_name),
                     'status': str(appointment.status.choice)
                 } for appointment in appointments
             ]
