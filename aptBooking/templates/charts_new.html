@@ -58,25 +58,87 @@
         <button onclick="updateDays(30)" class="btn btn-primary" >Month</button>
     </b>
 </p>
-<div class="row">
-    
-    
-        <div class="col-md-6">
+<div class="col-sm">
+    <button onclick="putPie()" id="pieButton" class="tabButton">pie</button>
+    <button onclick="putBar()" id="barButton" class="tabButton">bar</button>
+    <button onclick="putLine()" id="lineButton" class="tabButton">line</button>
+</div>
+    <div class="row">
+        <div class="col-md-6 tabelement" id="barDiv" style"display:none">
             <canvas id="myChartBar"></canvas>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 tabelement" id="pieDiv">
             <canvas id="myPieChart"></canvas>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 tabelement" id="lineDiv">
             <canvas id="myLineChart"></canvas>
-        </div>
+        </div>  
     </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
 <script>
+
+    function putPie() {
+        tabbuttons = document.getElementsByClassName("tabButton");
+        for (let i = 0; i < tabbuttons.length; i++) {
+            tabbuttons[i].disabled = false
+        }
+        document.getElementById("pieButton").disabled = true;
+        tabelements = document.getElementsByClassName("tabelement");
+        console.log('ww');
+        console.log(tabelements);
+        for (let i = 0; i < tabelements.length; i++) {
+            console.log(tabelements[i]);
+            tabelements[i].style.display = "none";
+        }
+        pieChart = undefined;
+        document.getElementById("myPieChart").remove();
+        $('#pieDiv').append('<canvas id="myPieChart"></canvas>');
+        getBarPieData();
+        document.getElementById("pieDiv").style.display = "block";
+    }
+
+    function putBar() {
+        tabbuttons = document.getElementsByClassName("tabButton");
+        for (let i = 0; i < tabbuttons.length; i++) {
+            tabbuttons[i].disabled = false
+        }
+        document.getElementById("barButton").disabled = true;
+        tabelements = document.getElementsByClassName("tabelement");
+        console.log('ww');
+        console.log(tabelements);
+        for (let i = 0; i < tabelements.length; i++) {
+            console.log(tabelements[i]);
+            tabelements[i].style.display = "none";
+        }
+        barGraph = undefined;
+        document.getElementById("myChartBar").remove();
+        $('#barDiv').append('<canvas id="myChartBar"></canvas>');
+        getBarPieData();
+        document.getElementById("barDiv").style.display = "block";
+    }
+
+    function putLine() {
+        tabbuttons = document.getElementsByClassName("tabButton");
+        for (let i = 0; i < tabbuttons.length; i++) {
+            tabbuttons[i].disabled = false
+        }
+        document.getElementById("lineButton").disabled = true;
+        tabelements = document.getElementsByClassName("tabelement");
+        console.log('ww');
+        console.log(tabelements);
+        for (let i = 0; i < tabelements.length; i++) {
+            console.log(tabelements[i]);
+            tabelements[i].style.display = "none";
+        }
+        lineChart = undefined;
+        document.getElementById("myLineChart").remove();
+        $('#lineDiv').append('<canvas id="myLineChart"></canvas>');
+        getTimeData();
+        document.getElementById("lineDiv").style.display = "block";
+    }
+
     function updateDays(days) {
         document.getElementById("noOfDays").value = days;
         updatePage();
@@ -100,6 +162,7 @@
             success: function(data) {
                 lineData = data;
                 if (lineChart == undefined) {
+                    console.log('here2')
                     drawLineGraph(data, "myLineChart");
                 } else {
                     updateLine(data);
@@ -134,15 +197,16 @@
             }
             pieData = newData;
             barData = data;
-            if (barGraph == undefined) {
-                drawBarGraph(barData, 'myChartBar');
-            } else {
-                updateBar(barData);
-            }
             if (pieChart == undefined) {
                 drawPieChart(pieData, 'myPieChart');
             } else {
                 updatePie(pieData);
+            }
+            if (barGraph == undefined) {
+                console.log('here');
+                drawBarGraph(barData, 'myChartBar');
+            } else {
+                updateBar(barData);
             }
         },
         error: function(error_data) {
@@ -179,7 +243,6 @@
                 data: chartdata,
                 borderWidth: 1,
                 backgroundColor: 'rgba(127, 127, 255, 1)',
-                borderWidth: 2,
                 borderRadius: 5,
                 borderSkipped: false
             },
@@ -188,7 +251,6 @@
                 data: chartdata2,
                 borderWidth: 1,
                 backgroundColor: 'rgba(255, 127, 127, 1)',
-                borderWidth: 2,
                 borderRadius: 5,
                 borderSkipped: false
             }]
@@ -280,7 +342,7 @@
         getTimeData();
     }
     
-    updatePage();
+    putPie();
 
 </script>
 </body>
