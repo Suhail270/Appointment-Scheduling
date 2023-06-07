@@ -12,7 +12,28 @@
 
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<style>
+    .h {
+        padding: 10px;
+        text-align:center
+    }
+    .center {
+        border: 5px solid;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 10px;
+    }
+    .outbox{
+        text-align: center;
+    }
+    .container{
+        width: 50%;
+        display: inline-block;
+    }
 
+</style>
 </head>
 
 <body class="">
@@ -47,34 +68,42 @@
           </ul>
         </div>
       </nav>
-<center class="row">
-	<h1> <b>Analytics</b> dashboard</h1>
-</center>
+
+	<h1 class="h"> <b>Analytics</b> dashboard</h1>
+
 <hr />
-<p>
-    Appointments completed/cancelled in the past <input type="number" value="7" style="width:50px" id="noOfDays" name="noOfDays" onchange="updatePage()"> days
+<p class="h">
+    <h2 class="h">Appointments from the past
+    <input type="number" value="7" style="width:57px" min="1" id="noOfDays" name="noOfDays" onchange="updatePage()"> days
+
     <b>
         <button onclick="updateDays(7)" class="btn btn-primary" >Week</button>
         <button onclick="updateDays(30)" class="btn btn-primary" >Month</button>
     </b>
-</p>
-<div class="col-sm">
-    <button onclick="putPie()" id="pieButton" class="tabButton">pie</button>
-    <button onclick="putBar()" id="barButton" class="tabButton">bar</button>
-    <button onclick="putLine()" id="lineButton" class="tabButton">line</button>
-</div>
-    <div class="row">
-        <div class="col-md-6 tabelement" id="barDiv" style"display:none">
-            <canvas id="myChartBar"></canvas>
-        </div>
-        <div class="col-md-6 tabelement" id="pieDiv">
-            <canvas id="myPieChart"></canvas>
-        </div>
-        <div class="col-md-6 tabelement" id="lineDiv">
-            <canvas id="myLineChart"></canvas>
-        </div>  
+</h2>
+    <div class="col-sm h" style="padding-bottom: 30px;" >
+        <button onclick="putPie()" id="pieButton" class="tabButton btn btn-info">Pie Chart</button>
+        <button onclick="putBar()" id="barButton" class="tabButton btn btn-info">Bar Chart</button>
+        <button onclick="putLine()" id="lineButton" class="tabButton btn btn-info">Line Chart</button>
     </div>
 
+</p>
+    <center>
+    <div class="">
+        <div class="col-md-6 tabelement" id="barDiv" style"display:none">   
+            <h4 style="margin-bottom: 50px;">Appointments Completed/Cancelled per Day</h4>  
+            <canvas id="myChartBar" width="500" height="500"></canvas>
+        </div>
+        <div class="col-md-6 tabelement" id="pieDiv">
+            <h4 style="margin-bottom: 50px;">Appointments Completed/Cancelled in the past</h4>
+            <canvas id="myPieChart" width="500" height="500"></canvas>
+        </div>
+        <div class="col-md-6 tabelement" id="lineDiv">
+            <h4 style="margin-bottom: 50px;">Appointments completed/cancelled per time range</h4>
+            <canvas id="myLineChart" width="500" height="500"></canvas>
+        </div>  
+    </div>
+    </center>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
 <script>
