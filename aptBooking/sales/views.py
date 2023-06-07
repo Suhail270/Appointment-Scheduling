@@ -31,7 +31,9 @@ def customer_reg(request):
     return render(request,"customer.html",{'form': form})
   
 class AppointmentCreateView(generic.CreateView):
-    template_name = "sales/appointment_create.html"
+    #template_name = "sales/appointment_create.html"
+    template_name = "sales/app_create.html"
+    #template_name = "sales/dummydata.html"
     form_class = AppointmentForm
 
     def get_success_url(self):

@@ -10,11 +10,12 @@
 <body>
   <!-- class="max-w-lg mx-auto" -->
 <section class="appointment-section">
-  <div class="default-form">
-    <div class="inner-form">
+  <div class="container">
+    <div class="sec-title">
+      <h2>APPOINTMENT DETAILS</h2>
+    </div>
       <form method="post" class="mt-5">
           {% csrf_token %}
-          <h2> <u>APPOINTMENT DETAILS</u></h2>
           <br>
           {% for field in form %}
           {% if field.name == 'customer' or field.name == 'status' %}
@@ -26,8 +27,6 @@
             
             {{ field }}
           </div>
-          
-          
 
           {% endif %}
 
@@ -71,10 +70,13 @@
               Submit
           </button>
       </div>
-    </div>
-      
-        
+    </div> 
       </form>
+
+
+
+
+
       <br>
       <br>
       <div class="column">
