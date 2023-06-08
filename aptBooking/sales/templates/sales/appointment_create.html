@@ -1,16 +1,33 @@
+{% extends 'customer_base.html' %}
+{% load static %}
+{% block content %}
+<head>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/appt.css' %}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
 
-<div class="max-w-lg mx-auto">
-    <form method="post" class="mt-5">
+
+<body>
+  <nav class="navigation-bar">
+    <img src="{% static 'images/alyousuf.png' %}", class="logo-img">
+    <a>Appointment Booking</a>
+  </nav>
+  <section class="contents">
+  <section class="container">
+    <div class="form-container">
+      <form class="form" method="post">
+        <header>Appointment Form</header>
         {% csrf_token %}
 
+        <div class="form-content">
+
         {% for field in form %}
-        {% if field.name == 'customer' or field.name == 'status' %}
+        {% if field.name == 'customer' or field.name == 'status' or field.name == 'organization' %}
         
         <div class="mb-4" hidden>
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+          <label class="input-box" for="{{ field.id_for_label }}">
             {{ field.label }}
           </label>
           {{ field }}
@@ -18,13 +35,11 @@
 
         {% endif %}
 
-        {% if field.name != 'customer' and field.name != 'status' %}
+        {% if field.name != 'customer' and field.name != 'status' and field.name != 'organization'%}
         
         {% if field.name == 'day' %}
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
-            {{ field.label }}
-          </label>
+        <div class="input-box">
+          <label for="{{ field.id_for_label }}">{{ field.label }}<span class="star">*</span></label>
           {{ field }}
           <script>
             $(document).ready(function() {
@@ -39,11 +54,11 @@
           </script>
         </div>
         {% else %}
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
-            {{ field.label }}
+        <div class="select-box">
+          <label for="{{ field.id_for_label }}">
+                  {{ field.label }} <span class="star">*</span>
           </label>
-          {{ field }}
+                  {{ field }}
         </div>
         {% endif %}
 
@@ -51,16 +66,31 @@
 
     {% endfor %}
 
-        <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">
+        <button type='submit'>
             Submit
         </button>
+    </div>
     </form>
-</div>
 
+      <div class="business-hours">
+        <h2><u>Business Hours</u></h2>
+        <ul>
+          <li>Monday: 9:00 AM - 5:00 PM</li>
+          <li>Tuesday: 9:00 AM - 5:00 PM</li>
+          <li>Wednesday: 9:00 AM - 5:00 PM</li>
+          <li>Thursday: 9:00 AM - 5:00 PM</li>
+          <li>Friday: 9:00 AM - 5:00 PM</li>
+          <li>Saturday: 10:00 AM - 2:00 PM</li>
+          <li>Sunday: Closed</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</section>
 
-
-
+</body>
 <script>
+
 $(document).ready(function() {
   // Get the select fields by their IDs
   var dayField = $("#id_day");
@@ -125,3 +155,5 @@ function checkFieldsChanged() {
   });
 });
 </script>
+
+{% endblock content %}

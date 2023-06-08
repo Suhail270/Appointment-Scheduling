@@ -23,50 +23,43 @@ def customer_reg(request, slug):
     if request.method == "POST":
         form = customerform(request.POST)
         if form.is_valid():
-            firstname = form.cleaned_data['firstname']
-            lastname = form.cleaned_data['lastname']
+            firstname = form.cleaned_data['first_name']
+            lastname = form.cleaned_data['last_name']
             mobile = form.cleaned_data['mobile']
             email = form.cleaned_data['email']
             organization = form.cleaned_data['organization']
 
-            user = User.objects.create(username=firstname, first_name=firstname, last_name=lastname, mobile=mobile, email=email, organization=organization)
-            customer = Customer.objects.create(user=user, organization=organization)
-            request.session['customer_id'] = customer.id
+            try:
+                user = User.objects.create(username=firstname, first_name=firstname, last_name=lastname, mobile=mobile, email=email, organization=organization)
 
+            except:
+                user = User.objects.get(username=firstname)                
+            
+            try:
+                customer = Customer.objects.create(user=user, organization=organization)
+            
+            except:
+                customer = Customer.objects.get(user = user)
+                
+            request.session['customer_id'] = customer.id
             return redirect("appointment_create.html")
+            
     else:
         form = customerform(initial={'organization': organization})  # Set initial value for the hidden field
 
+    # print("USER: ", user)
+    # print("CUSTOMER: ", customer)
     return render(request, "custreg.html", {'form': form})
 
-    # try:
-    #     organization = Organization.objects.get(choice=slug) 
+class SuccessCreatedView(generic.TemplateView):
+    template_name = "sales/success_creation.html"
 
-    # except Organization.DoesNotExist:
-    #     organization = Organization.objects.create(choice=slug)
-
-    # if request.method == "POST":
-    #     form = NewUserForm(request.POST)
-    #     if form.is_valid():
-    #         user = form.save(commit=False)
-    #         user.organization = organization
-    #         user.save()
-    #         agent = Agent.objects.create(user = user, organization = organization)
-    #         login(request, user)
-    #         messages.success(request, "Registration successful.")
-    #     else:
-    #         messages.error(request, "Unsuccessful registration. Invalid information.")
-    # else:
-    #     form = NewUserForm(initial={'organization': organization})  # Set initial value for the hidden field
-
-    # return render(request=request, template_name="signup.html", context={"register_form": form})
-  
 class AppointmentCreateView(generic.CreateView):
     template_name = "sales/appointment_create.html"
     form_class = AppointmentForm
 
     def get_success_url(self):
-        return reverse_lazy('home')
+        return reverse_lazy('creation-success')
 
     def get_form_class(self):
         slug = self.kwargs.get('slug')
@@ -140,7 +133,7 @@ class AppointmentUpdateView(generic.UpdateView):
     form_class = AppointmentForm
 
     def get_success_url(self):
-        return reverse_lazy('home')
+        return reverse_lazy('creation-success')
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -166,7 +159,7 @@ class AppointmentUpdateView(generic.UpdateView):
 
 
 class AppointmentCancelView(generic.TemplateView):
-    template_name = 'sales/appointment_cancel.html'
+    template_name = 'sales/success_cancellation.html'
     
     def get(self, request, *args, **kwargs):
 

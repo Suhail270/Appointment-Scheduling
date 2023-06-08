@@ -20,7 +20,7 @@ from django.conf.urls import include
 from django.views.generic.base import TemplateView 
 from django.contrib.auth.views import LoginView
 
-from sales.views import AppointmentCreateView, AppointmentUpdateView, get_available_time_slots, AppointmentCancelView
+from sales.views import AppointmentCreateView, AppointmentUpdateView, get_available_time_slots, AppointmentCancelView, SuccessCreatedView
 
 from users import views
 
@@ -47,6 +47,7 @@ urlpatterns = [
     
     #path('login/', LoginView.as_view(), name='login')
     path('sales/<slug:slug>/customer_reg/appointment_create.html', AppointmentCreateView.as_view(), name='apt-create'),
+    path('sales/appointment/success', SuccessCreatedView.as_view(), name='creation-success'),
     path('appointments/update/<int:pk>/', AppointmentUpdateView.as_view(), name='apt-update'),
     path('appointments/cancel/<int:pk>/', AppointmentCancelView.as_view(), name='apt-cancel'),
     path("get_available_time_slots/", get_available_time_slots, name="get_available_time_slots"),
