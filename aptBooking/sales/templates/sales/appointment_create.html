@@ -1,127 +1,167 @@
+{% extends 'customer_base.html' %}
+{% load static %}
+{% block content %}
+<head>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/appt.css' %}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
 
-<div class="max-w-lg mx-auto">
-    <form method="post" class="mt-5">
+
+<body>
+  <nav class="navigation-bar">
+    <img src="{% static 'images/alyousuf.png' %}", class="logo-img">
+    <a>Appointment Booking</a>
+  </nav>
+  <section class="contents">
+  <section class="container">
+    <div class="form-container">
+      <form class="form" method="post">
+        <header>Appointment Form</header>
         {% csrf_token %}
 
-        {% for field in form %}
-        {% if field.name == 'customer' or field.name == 'status' %}
-        
-        <div class="mb-4" hidden>
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
-            {{ field.label }}
-          </label>
-          {{ field }}
+        <div class="form-content">
+          {% for field in form %}
+            
+
+            {% if field.name != 'customer' and field.name != 'status' and field.name != 'organization' or field.name == 'agent' or field.name == 'time'  %}
+              {% if field.name == 'day' %}
+
+                <div class="input-box">
+
+                    <label for="{{ field.id_for_label }}">
+                      {{ field.label }} <span class="star">*</span>
+                    </label>
+                      {{ field }}
+
+
+                  <script>
+                    $(document).ready(function() {
+                      $("#{{ field.id_for_label }}").datepicker({
+                        minDate: 0,
+                        maxDate: "+30d",
+                        dateFormat: "yy-mm-dd",
+                        changeMonth: true,
+                        changeYear: true
+                      });
+                    });
+                  </script>
+                </div>
+
+              {% else %}
+              <div class="select-box">
+                <label for="{{ field.id_for_label }}">
+                  {{ field.label }} <span class="star">*</span>
+                </label>
+                  {{ field }}
+              </div>
+              {% endif %}
+
+            {% endif %}
+
+          {% endfor %}
+
+          <button type="submit">Submit</button>
         </div>
+      </form>
 
-        {% endif %}
+      <div class="business-hours">
+        <h2><u>Business Hours</u></h2>
+        <ul>
+          <li>Monday: 9:00 AM - 5:00 PM</li>
+          <li>Tuesday: 9:00 AM - 5:00 PM</li>
+          <li>Wednesday: 9:00 AM - 5:00 PM</li>
+          <li>Thursday: 9:00 AM - 5:00 PM</li>
+          <li>Friday: 9:00 AM - 5:00 PM</li>
+          <li>Saturday: 10:00 AM - 2:00 PM</li>
+          <li>Sunday: Closed</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</section>
 
-        {% if field.name != 'customer' and field.name != 'status' %}
-        
-        {% if field.name == 'day' %}
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
-            {{ field.label }}
-          </label>
-          {{ field }}
-          <script>
-            $(document).ready(function() {
-              $("#{{ field.id_for_label }}").datepicker({
-                minDate: 0,
-                maxDate: "+30d",
-                dateFormat: "yy-mm-dd",
-                changeMonth: true,
-                changeYear: true
-              });
-            });
-          </script>
-        </div>
-        {% else %}
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
-            {{ field.label }}
-          </label>
-          {{ field }}
-        </div>
-        {% endif %}
-
-        {% endif %}
-
-    {% endfor %}
-
-        <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">
-            Submit
-        </button>
-    </form>
-</div>
-
-
-
-
+</body>
 <script>
-$(document).ready(function() {
-  // Get the select fields by their IDs
-  var dayField = $("#id_day");
-  var agentField = $("#id_agent");
-  var timeField = $("#id_time");
+  $(document).ready(function() {
+    // Get the select fields by their IDs
+    var dayField = $("#id_day");
+    var agentField = $("#id_agent");
+    var timeField = $("#id_time");
 
-  // Store the selected values of day and agent
-  var selectedDay = dayField.val();
-  var selectedAgent = agentField.val();
+    // Store the selected values of day and agent
+    var selectedDay = dayField.val();
+    var selectedAgent = agentField.val();
 
-  // Function to update the available time slots based on the selected day and agent
-  function updateAvailableTimeSlots() {
-    // Send an AJAX request to retrieve available time slots for the selected day and agent
-    $.ajax({
-      url: "/get_available_time_slots/",
-      data: { day: selectedDay, agent: selectedAgent },
-      dataType: "json",
-      success: function(response) {
-        // Clear the current options in the time field
-        timeField.empty();
+    // Function to update the available time slots based on the selected day and agent
+    function updateAvailableTimeSlots() {
 
-        // Add an empty option at the beginning
-        timeField.append("<option value=''>---------</option>");
+      var dateFormat = "yy-mm-dd"; // Define the desired date format
+  
+      // Get the selected date using the datepicker widget
+      var selectedDate = $.datepicker.formatDate(dateFormat, dayField.datepicker("getDate"));
 
-        // Add the new options based on the response
-        $.each(response.time_slots, function(index, timeSlot) {
-          var option = $("<option></option>")
-            .attr("value", timeSlot.id)
-            .text(timeSlot.choice);
-          timeField.append(option);
-        });
-      },
-      error: function() {
-        console.log("Error retrieving available time slots");
-      }
-    });
-  }
+      console.log("Selected Date: " + selectedDate);
 
-  // Function to check if both fields have changed
-function checkFieldsChanged() {
-  try {
-    var newDay = dayField.val();
-    var newAgent = agentField.val();
+      // Send an AJAX request to retrieve available time slots for the selected day and agent
+      $.ajax({
+        url: "/get_available_time_slots/",
+        data: { day: selectedDay, agent: selectedAgent },
+        dataType: "json",
+        success: function(response) {
+          // Clear the current options in the time field
+          timeField.empty();
 
-    // If either day or agent has changed, update the selected values
-    if (newDay !== selectedDay || newAgent !== selectedAgent) {
-      selectedDay = newDay;
-      selectedAgent = newAgent;
+          // Add an empty option at the beginning
+          timeField.append("<option value=''>---------</option>");
+
+          // Add the new options based on the response
+          $.each(response.time_slots, function(index, timeSlot) {
+            var option = $("<option></option>")
+              .attr("value", timeSlot.id)
+              .text(timeSlot.choice);
+            timeField.append(option);
+          });
+        },
+        error: function() {
+          console.log("Error retrieving available time slots");
+        }
+      });
+
+      console.log("AJAX Request:", { day: selectedDay, agent: selectedAgent });
     }
 
-    // Update the available time slots
-    updateAvailableTimeSlots();
-  } catch (error) {
-    // Ignore the error silently without logging or displaying any message
-  }
-}
+    // Function to check if both fields have changed
+    function checkFieldsChanged() {
+      try {
+        var newDay = dayField.val();
+        var newAgent = agentField.val();
 
-  // Listen for changes on both the day and agent fields
-  dayField.add(agentField).change(function() {
-    // Delay the check to allow both fields to update
-    setTimeout(checkFieldsChanged, 100);
+        // If either day or agent has changed, update the selected values
+        if (newDay !== selectedDay || newAgent !== selectedAgent) {
+          selectedDay = newDay;
+          selectedAgent = newAgent;
+        }
+
+        // Update the available time slots
+        updateAvailableTimeSlots();
+      } catch (error) {
+        // Ignore the error silently without logging or displaying any message
+      }
+    }
+
+    // Listen for changes on both the day and agent fields
+    dayField.add(agentField).change(function() {
+      // Delay the check to allow both fields to update
+      setTimeout(checkFieldsChanged, 100);
+    });
+
+    $("#id_field_name").autocomplete({
+      source: "/your_autocomplete_endpoint/",
+      minLength: 1,
+      delay: 300
+    });
   });
-});
 </script>
+{% endblock content %}

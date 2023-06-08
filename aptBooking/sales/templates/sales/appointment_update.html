@@ -1,28 +1,42 @@
+{% extends 'customer_base.html' %}
+{% load static %}
+{% block content %}
+<head>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/appt.css' %}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
 
-<div class="max-w-lg mx-auto">
-  <form method="post" class="mt-5">
+<body>
+  <nav class="navigation-bar">
+    <img src="{% static 'images/alyousuf.png' %}", class="logo-img">
+    <a>Appointment Booking</a>
+  </nav>
+<section class="contents">
+   <section class="container">
+<div class="form-container">
+  <form method="post" class="form">
+    <header>Update Form</header>
     {% csrf_token %}
     {% for field in form %}
-      {% if field.name == 'customer' or  field.name == 'status' %}
+      {% if field.name == 'customer' or  field.name == 'status' or  field.name == 'organization'%}
         
-        <div class="mb-4" hidden>
+        <div class="input-box" hidden>
           <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
-            {{ field.label }}
+            {{ field.label }} <span class="star">*</span>
           </label>
           {{ field }}
         </div>
 
         {% endif %}
 
-        {% if field.name != 'customer' and  field.name != 'status' %}
+        {% if field.name != 'customer' and  field.name != 'status' and field.name != organization %}
 
          {% if field.name == 'day' %}
-        <div class="mb-4">
+        <div class="input-box">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
-            {{ field.label }}
+            {{ field.label }} <span class="star">*</span>
           </label>
           {{ field }}
           <script>
@@ -38,9 +52,9 @@
           </script>
         </div>
         {% else %}
-        <div class="mb-4">
+        <div class="select-box">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
-            {{ field.label }}
+            {{ field.label }} <span class="star">*</span>
           </label>
           {{ field }}
         </div>
@@ -55,6 +69,7 @@
         </button>
     </form>
 </div>
+</body>
 
 
 
@@ -124,3 +139,4 @@ function checkFieldsChanged() {
   });
 });
 </script>
+{% endblock content %}

@@ -23,20 +23,37 @@ def customer_reg(request, slug):
     if request.method == "POST":
         form = customerform(request.POST)
         if form.is_valid():
-            firstname = form.cleaned_data['firstname']
-            lastname = form.cleaned_data['lastname']
+            firstname = form.cleaned_data['first_name']
+            lastname = form.cleaned_data['last_name']
             mobile = form.cleaned_data['mobile']
             email = form.cleaned_data['email']
             organization = form.cleaned_data['organization']
 
-            user = User.objects.create(username=firstname, first_name=firstname, last_name=lastname, mobile=mobile, email=email, organization=organization)
-            customer = Customer.objects.create(user=user, organization=organization)
+            try:
+                print("@@@@@@@@@@@@@@@@@@")
+                user = User.objects.create(username=firstname, first_name=firstname, last_name=lastname, mobile=mobile, email=email, organization=organization)
+            except:
+                print("########################")
+                user = User.objects.get(username=firstname)
+            
+            print("USER: ", user)
+                
+            
+            try:
+                customer = Customer.objects.create(user=user, organization=organization)
+            
+            except:
+                customer = Customer.objects.get(user = user)
+                
             request.session['customer_id'] = customer.id
-
+            print("CUSTOMER: ", customer)
             return redirect("appointment_create.html")
+            
     else:
         form = customerform(initial={'organization': organization})  # Set initial value for the hidden field
 
+    # print("USER: ", user)
+    # print("CUSTOMER: ", customer)
     return render(request, "custreg.html", {'form': form})
 
     # try:
@@ -94,8 +111,10 @@ class AppointmentCreateView(generic.CreateView):
         return initial
 
     def form_valid(self, form):
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         appointment = form.save(commit=False)
         selected_day = form.cleaned_data.get("day")
+        print("DAY: ", selected_day)
         selected_agent = form.cleaned_data.get("agent").user.email
 
         # Retrieve the unavailable time slots based on the selected day and agent
@@ -179,12 +198,26 @@ class AppointmentCancelView(generic.TemplateView):
 
 def get_available_time_slots(request):
     if request.method == "GET":
+
+        loop_break = False
+
         unavailable_slots = []
         available_time_slots = []
         selected_day = request.GET.get("day")
         selected_agent = Agent.objects.get(id=request.GET.get("agent"))
 
-        existing_appointments = Appointment.objects.filter(day=selected_day, agent=selected_agent)
+        print("Received Day:", selected_day)
+
+        if not selected_day:
+            print("No day selected")
+        
+        while loop_break is False:
+            try:
+                existing_appointments = Appointment.objects.filter(day=selected_day, agent=selected_agent)
+                loop_break = True
+            except:
+                pass
+
         for appointment in existing_appointments:
             if appointment.status.choice != "Cancelled":  # Exclude cancelled appointments
                 unavailable_slots.append(appointment.time.choice)
