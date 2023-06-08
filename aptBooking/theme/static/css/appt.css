@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+*{
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+.contents {
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(168, 201, 240);
+}
+
+.container{
+  position: relative;
+  max-width: 1000px;
+  width: 100%;
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.container header{
+  font-size: 30px;
+  color: #000000;
+  font-weight: 600;
+  text-align: center;
+}
+
+.container .form{
+  margin-top: 1px;
+
+}
+
+.form .input-box, .form .select-box{
+  width: 100%;
+  margin-top: 30px;
+  
+}
+
+.input-box label, .select-box label{
+  color: #333;
+}
+
+.form :where(.input-box input, .select-box select){
+  position: relative;
+  height: 50px;
+  width: 100%;
+  outline: none;
+  font-size: 1rem;
+  color: #707070;
+  margin-top: 8px;
+  border-radius: 6px;
+  padding: 0 15px;
+
+}
+
+.form .column{
+  display: flex;
+  column-gap: 15px;  
+}
+
+.select-box select{
+  height: 100%;
+  width: 100%;
+  outline: none;
+  border: none;
+  color: #707070;
+  font-size: 1rem;
+}
+
+.address :where(input, .select-box){
+  margin-top: 20px;
+}
+
+.form button{
+  height: 55px;
+  width: 100%;
+  color: #fff;  
+  font-size: 1rem;
+  border: none;
+  margin-top: 30px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 400;
+  transition: all 0.2s ease;
+  background-color: rgb(78, 151, 240);
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  
+}
+
+.form button:hover{
+  background-color: rgb(44, 85, 234);
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+/* Responsive */
+@media screen and (max-width: 500px){
+  .form .column{
+    flex-wrap: wrap;
+  }
+}
+.business-hours {
+    background-color: #f3f3f3;
+    padding: 30px;
+    border: 3px solid #ccc;
+    border-radius: 5px;
+    margin-left: 45px;
+    flex: 1;
+    margin-top: 10px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 50px;
+  }
+  
+  .business-hours h2 {
+    font-size: 30px;
+    margin-bottom: 10px;
+    /* text-align: center */
+    font-weight: 1000;
+    
+  }
+  
+  .business-hours ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    /* text-align: center */
+  }
+  
+  .business-hours li {
+    font-size: 16px;
+    margin-bottom: 8px;
+    /* text-align: center */
+  }
+  
+  .form-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .form-content {
+    flex: 1;
+    margin-right: 55px;
+    margin-left: 55px;
+    margin-bottom: 10px;
+  }
+  
+  
+  .navigation-bar {
+    width: 100%;
+    height: 80px;
+    background-color: #ffffff; 
+    margin: 0;
+    padding: 0;
+  }
+  
+  .logo-img {
+    display: inline-block;
+    vertical-align: top;
+    /* width: 70px; */
+    height: 80px;
+    margin-right: 20px;
+  }
+  .navigation-bar a {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 20px;
+    height: 80px;        
+    line-height: 80px;
+    text-decoration: none;
+  }
+  
+  /* .navigation-bar img:hover:not(.active) {
+    background-color: #111;
+  } */
+  
+  .navigation-bar a:hover:not(.active) {
+    background-color: #ffffff;
+  }
