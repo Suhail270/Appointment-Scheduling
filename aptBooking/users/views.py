@@ -72,17 +72,31 @@ def dashboard_dropdown(request):
 @csrf_exempt
 def dashboard(request):
     
+    user = request.user
+
     if request.method == 'POST':
         appointment = Appointment.objects.get(pk = int(request.POST.get('app_id')))
         appointment.status = Status.objects.get(choice = request.POST.get('app_stat'))
         appointment.save()
     stat_choices = [stat for stat in Status.objects.all()]
-    if len(Agent.objects.filter(user_id = request.user.id)) == 0:
-        number = 0
+
+    if user.is_organizer:
+        
+        if len(Agent.objects.all().filter(organization = user.organization)) == 0:
+            number = 0
+        else:
+            number = (Appointment.objects.all().filter(organization = user.organization).count())/2
+
     else:
-        number = (Appointment.objects.filter(agent = Agent.objects.get(user_id = request.user.id)).count())/2
+
+        if len(Agent.objects.filter(user_id = request.user.id)) == 0:
+            number = 0
+        else:
+            number = (Appointment.objects.all().filter(agent = Agent.objects.get(user_id = request.user.id)).count())/2
+    
     number = math.ceil(number)
     number = [i + 1 for i in range(number)]
+
     if request.GET == {}:
         return render(request=request, context={'choices': stat_choices,'number':number, 'thepage': 1}, template_name="dashboard.html")
     else:
@@ -244,16 +258,25 @@ def chart_test(request):
     return render(request, "charts_new.html", {})
 
 def chart_appointment_times(request):
+
+    user = request.user
+
     no_of_days = int(request.GET.getlist('days')[0])
-    agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
-    appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+    
+    if user.is_organizer is True:
+        agents = Agent.objects.all().filter(organization = user.organization)
+        appointments = Appointment.objects.all().filter(organization = user.organization)
+    else:
+        agents = Agent.objects.all().select_related().filter(user_id = user.id)
+        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+
     times = TimeChoices.objects.all()
     date = datetime.date.today() - datetime.timedelta(no_of_days)
     times_list = [t.choice for t in times]
     time_appointments_completed = [0 for t in times]
     time_appointments_cancelled = [0 for t in times]
     date_appointments = appointments.filter(day__gt=date)
-    print('here')
+
     for i in range(len(times_list)):
         time_appointments_completed[i] = date_appointments.filter(time = times[i]).filter(status = Status.objects.get(choice = "Completed")).count()
         time_appointments_cancelled[i] = date_appointments.filter(time = times[i]).filter(status = Status.objects.get(choice = "Cancelled")).count()
@@ -262,24 +285,46 @@ def chart_appointment_times(request):
         "completed_apps": time_appointments_completed,
         "cancelled_apps": time_appointments_cancelled, 
     }
-    print(line_data)
     return JsonResponse(line_data, safe=False)
-        
+
+
+# not showing all the data
+
 def chart_weekly_appointments(request):
+
+    user = request.user
+
     no_of_days = int(request.GET.getlist('days')[0])
     dates = []
     completed = []
     cancelled = []
-    agents = Agent.objects.all().select_related().filter(user_id = request.user.id)
-    appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+
+    if user.is_organizer is True:
+        agents = Agent.objects.all().filter(organization = user.organization)
+        appointments = Appointment.objects.all().filter(organization = user.organization)
+    else:
+        agents = Agent.objects.all().select_related().filter(user_id = user.id)
+        appointments = Appointment.objects.all().filter(agent_id = int(agents[0].id))
+    
+    print("APPOINTMENTS: ", appointments)
+
     comp_stat = Status.objects.get(choice = "Completed")
     canc_stat = Status.objects.get(choice = "Cancelled")
     for i in range(no_of_days):
         date = datetime.date.today() - datetime.timedelta(days = i)
         dates.append(date)
         date_appointments = appointments.filter(day = date)
+        print("DATE: ", date, "   APPOINTMENT: ", date_appointments)
+
         completed.append(date_appointments.filter(status = comp_stat).count())
         cancelled.append(date_appointments.filter(status = canc_stat).count())
+
+        print("COMPLETED: ", completed)
+        print(completed[::-1])
+        print("CANCELLED: ", cancelled)
+
+    
+
     bar_data = {
         "labels":dates[::-1],
         "chartLabel": "Completed",
@@ -372,7 +417,7 @@ def delete_appointment_status(request):
         
         else:
             agent = Agent.objects.all().select_related().filter(user_id = user.id)
-            organization = agent.organization
+            organization = user.organization
 
         #adding appointment to cancelled appointments table
         

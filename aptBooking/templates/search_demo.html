@@ -23,14 +23,16 @@
      text-align:center
    }
    </style>
-    <h2 class="h">Here:</h2>
+
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }} 
         
         <center>
         <div class="col-md-2">
-        <p >Please select a date:</p>
+        <b>
+        <p style="margin-top: 20px;">Please select a date:</p>
+        </b>
         <input type="date" class="form-control" name="date" id="date" required>
         
         <!-- <p>Please select the time slot:</p>
@@ -43,8 +45,8 @@
             {% endfor %}
         </select>
         </div>
-        <button type="submit" class="btn btn-success">Submit</button>
-        <a href="/"><button type="button" class="btn btn-danger"> Cancel </button></a>
+        <button type="submit" class="btn btn-success" style="margin-top: 20px;">Submit</button>
+        <a href="/"><button type="button" class="btn btn-danger" style="margin-top: 20px;"> Cancel </button></a>
          </center>
     </form>
 
