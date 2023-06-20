@@ -129,17 +129,29 @@
                             <td>
                               <button onclick="buttonSubmit('hiddenForm', ${appointment.id}, 'Completed')" type="button" class="btn btn-success" style="height:40px;width:185px" >Appointment Complete</button>
                               <a href="users/delete_appointment">
-                                <button id = "ap" value="${appointment.id}" onclick="testJS()" type="submit" class="btn btn-danger bt1" style="height:40px;width:185px" >
+                                <button id = "ap" value="${appointment.id}" onclick="testJS()" type="submit" class="btn btn-danger bt1 ${appointment.status}" style="height:40px;width:185px" >
                                   Cancel Appoitment </button>
                               </a>
                             </td>
                             </tr>`
             document.querySelector('tbody').insertAdjacentHTML('beforeend',markup)
           });
+
+          let ls = document.getElementsByClassName("Cancelled");
+          console.log(ls);
+          console.log(ls.length);
+          console.log(document.getElementsByClassName("Cancelled").length);
+          for (let i = 0; i < ls.length; i++) {
+            console.log(i);
+            console.log(ls[i].style.display);
+            ls[i].style.display = "none";
+            console.log(ls[i].style.display);
+          }
           
         })
         .catch(error => console.log(error));
     }
     fetchAppointments({{ thepage }});
+
     </script>
 {% endblock %}

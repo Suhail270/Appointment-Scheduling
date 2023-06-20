@@ -23,6 +23,126 @@ from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 import math
 
+def chatApi(request):
+    print([field.name for field in Appointment._meta.fields])
+
+    string_to_model = [
+        ["appointment", Appointment],
+        ["agent", Agent],
+        ["user", User],
+        ["customer", Customer],
+        ["status", Status],
+        # ["time choices", TimeChoices],
+        # ["preferred contact", PreferredContact],
+        # ["", AgentCancelledAppointment]
+    ]
+
+    user_in = "give me users with "
+    user_in_lower = user_in.lower()
+    user_in_lower_split = user_in_lower.split(" ")
+
+    q_count = False
+    q_model = None
+    q_field = None
+    q_cond = None
+    q_val = None
+
+    print(user_in_lower_split)
+
+    count = 0
+    while len(user_in_lower_split) != 0:
+        print(user_in_lower_split)
+        token = user_in_lower_split.pop(0)
+
+        if token == "with" or token == "where":
+            q_cond = "="
+            token = user_in_lower_split.pop(0)
+            if q_model is not None:
+                fields = [field.name for field in q_model._meta.fields]
+                for field in fields:
+                    if token == field or token[:-1] == field:
+                        q_field = field
+                        break
+                token = user_in_lower_split.pop(0)
+                while True:
+                    if token == "is":
+                        token = user_in_lower_split.pop(0)
+                        continue
+                    if token == "greater" or token == "larger":
+                        q_cond = ">"
+                        token = user_in_lower_split.pop(0)
+                        if token == "than":
+                            token = user_in_lower_split.pop(0)
+                            if token == "or":
+                                token = user_in_lower_split.pop(0)
+                                if token == "equal":
+                                    token = user_in_lower_split.pop(0)
+                                    if token == "to":
+                                        q_cond = ">="
+                                        token = user_in_lower_split.pop(0)
+                                        continue
+                            continue
+                    if token == "smaller" or token == "lower" or token == "less":
+                        q_cond = "<"
+                        token = user_in_lower_split.pop(0)
+                        if token == "than":
+                            token = user_in_lower_split.pop(0)
+                            if token == "or":
+                                token = user_in_lower_split.pop(0)
+                                if token == "equal":
+                                    token = user_in_lower_split.pop(0)
+                                    if token == "to":
+                                        q_cond = "<="
+                                        token = user_in_lower_split.pop(0)
+                                        continue
+                            continue
+                    break
+                if q_field is not None:
+                    q_val = token
+
+        if q_model is not None:
+            fields = [field.name for field in q_model._meta.fields]
+            for field in fields:
+                if token == field or token[:-1] == field:
+                    q_field = field
+                    break
+
+        for mod in string_to_model:
+            if token == mod[0] or token[:-1] == mod[0]:
+                q_model = mod[1]
+                break
+
+        if token == "how" and len(user_in_lower_split) != 0:
+            token = user_in_lower_split[0]
+            if token == "many":
+                user_in_lower_split.pop(0)
+                q_count = True
+                continue
+            continue
+        continue
+
+    if q_count == True:
+        print("count = ", q_model.objects.count())
+
+    if q_cond is not None:
+        if q_cond == "<":
+            q_field += "__lt"
+        elif q_cond == "<=":  
+            q_field += "__lte"
+        elif q_cond == ">":
+            q_field += "__gt"
+        elif q_cond == ">=":  
+            q_field += "__gte"
+        print(q_field)
+        filter_kwargs = {q_field: q_val}
+        obs = q_model.objects.filter(**filter_kwargs)
+        if len(obs) == 0 and q_val.isnumeric():
+            q_val = int(q_val)
+            obs = q_model.objects.filter(**filter_kwargs)
+        for ob in obs:
+            print(ob)
+
+    return HttpResponse("success")
 
 def register(request):
     if request.method == "POST":
