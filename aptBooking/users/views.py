@@ -23,7 +23,13 @@ from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 import math
 
+@csrf_exempt
 def chatApi(request):
+    user_in = ""
+
+    if request.method == "POST":
+        user_in = request.POST.getlist('prompt')[0]
+
     print([field.name for field in Appointment._meta.fields])
 
     string_to_model = [
@@ -34,23 +40,25 @@ def chatApi(request):
         ["status", Status],
         # ["time choices", TimeChoices],
         # ["preferred contact", PreferredContact],
-        # ["", AgentCancelledAppointment]
+        # ["???", AgentCancelledAppointment]
     ]
 
-    user_in = "give me users with "
     user_in_lower = user_in.lower()
     user_in_lower_split = user_in_lower.split(" ")
 
     q_count = False
     q_model = None
+    q_model_name = None
     q_field = None
     q_cond = None
     q_val = None
+    q_field_left = None
+    q_ans = None
 
     print(user_in_lower_split)
 
     count = 0
-    while len(user_in_lower_split) != 0:
+    while len(user_in_lower_split) != 0 and user_in != "":
         print(user_in_lower_split)
         token = user_in_lower_split.pop(0)
 
@@ -106,10 +114,29 @@ def chatApi(request):
                 if token == field or token[:-1] == field:
                     q_field = field
                     break
+        else:
+            if len(user_in_lower_split) != 0:
+                if user_in_lower_split[0] == "of":
+                    if user_in_lower_split[1] == "the":
+                        for mod in string_to_model:
+                            if user_in_lower_split[2] == mod[0] or user_in_lower_split[2][:-1] == mod[0]:
+                                q_model = mod[1]
+                                q_model_name = mod[0]
+                    else:
+                        for mod in string_to_model:
+                            if user_in_lower_split[1] == mod[0] or user_in_lower_split[1][:-1] == mod[0]:
+                                q_model = mod[1]
+                                q_model_name = mod[0]   
+                    fields = [field.name for field in q_model._meta.fields]
+                    for field in fields:
+                        if token == field or token[:-1] == field:
+                            q_field_left = field
+                            break
 
         for mod in string_to_model:
             if token == mod[0] or token[:-1] == mod[0]:
                 q_model = mod[1]
+                q_model_name = mod[0]
                 break
 
         if token == "how" and len(user_in_lower_split) != 0:
@@ -119,12 +146,14 @@ def chatApi(request):
                 q_count = True
                 continue
             continue
+        
+        if (token == "count" or token == "number") and len(user_in_lower_split) != 0:
+            q_count = True
+            continue
         continue
 
-    if q_count == True:
-        print("count = ", q_model.objects.count())
-
     if q_cond is not None:
+        og_q_field = q_field
         if q_cond == "<":
             q_field += "__lt"
         elif q_cond == "<=":  
@@ -139,10 +168,32 @@ def chatApi(request):
         if len(obs) == 0 and q_val.isnumeric():
             q_val = int(q_val)
             obs = q_model.objects.filter(**filter_kwargs)
+        if q_count == True:
+            q_ans = len(obs)
+        else:
+            if q_field_left == None:
+                q_ans = q_model_name + "(s) with " + og_q_field + " " + q_cond + " " + q_val + ":"
+                for ob in obs:
+                    q_ans += " " + str(ob) + ","
+                # q_ans = obs
+                # for ob in obs:
+                #     print(ob)
+            else:
+                q_ans = q_field_left + "(s) of " + q_model_name + "(s) with " + og_q_field + " " + q_cond + " " + q_val + ":"
+                for ob in obs:
+                    q_ans += " " + str(getattr(ob, q_field_left)) + ","
+    elif q_count == True:
+        q_ans = "count = " + str(q_model.objects.count())
+    elif q_model_name != None:
+        q_ans = q_model_name + "s:"
+        obs = q_model.objects.all()
         for ob in obs:
-            print(ob)
+            q_ans += " " + str(ob) + ","
 
-    return HttpResponse("success")
+    print(user_in)
+    if q_ans != None and q_ans[-1] == ",":
+        q_ans = q_ans[:-1]
+    return render(request=request, context={'ans': q_ans, 'prompt': user_in}, template_name="chat.html")
 
 def register(request):
     if request.method == "POST":

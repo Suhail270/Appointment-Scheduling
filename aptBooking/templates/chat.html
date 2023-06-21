@@ -1,0 +1,21 @@
+{% block content %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<div style="margin: 50px;">
+    <form method="post">
+        <p><b>Query:</b></p>
+        <input type="text" name="prompt" id="prompt" value="{{ prompt }}" style="width: 500px;">
+        <button type="submit">submit</button>
+        <br>
+        <p><b>Reply:</b></p>
+        <p>{{ ans }}<p>
+        <br><br><br>
+        <p>Examples:<p>
+        <br>
+        <p>list all users<p>
+        <p>give me the user with id 3<p>
+        <p>show me users with ids larger than 4<p>
+        <p>give me the mobiles of users with ids larger than 5<p>
+        <p>give me the status of the appointment with id 10<p>
+    </form>
+</div>
+{% endblock %}
